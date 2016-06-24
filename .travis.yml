@@ -16,5 +16,5 @@ before_install:
   fi
   
 script:
-- fgt golint $(find . | grep .go$ )
+- fgt golint $(find . | grep .go$ | grep -v .pb.go)
 - $HOME/gopath/bin/goveralls -service=travis-ci github.com/brotherlogic/monitor

@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "github.com/brotherlogic/discovery/proto/discovery.proto";
+
+message Empty {}
+
+service MonitoringService {
+
+        rpc ReceiveHeartbeat (RegistryEntry) returns (Empty) {}
+}
