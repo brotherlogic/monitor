@@ -17,4 +17,4 @@ before_install:
   
 script:
 - fgt golint $(find . | grep .go$ | grep -v .pb.go)
-- $HOME/gopath/bin/goveralls -service=travis-ci github.com/brotherlogic/monitor
+- $HOME/gopath/bin/goveralls -service=travis-ci -ignore=monitor.go github.com/brotherlogic/monitor
