@@ -9,8 +9,12 @@ import (
 
 func TestHeartBeat(t *testing.T) {
 	s := InitServer()
-	_, err := s.ReceiveHeartbeat(context.Background(), &pbr.RegistryEntry{})
+	r, err := s.ReceiveHeartbeat(context.Background(), &pbr.RegistryEntry{})
 	if err != nil {
 		t.Errorf("Unable to send heartbeat: %v", err)
+	}
+
+	if r.BeatTime <= 0 {
+		t.Errorf("Failed to get the right beat time: %v", r.BeatTime)
 	}
 }

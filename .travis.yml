@@ -1,12 +1,9 @@
 language: go
-
 go:
-  - 1.6
-  
+- 1.6
 branches:
   only:
-    - master
-
+  - master
 before_install:
 - go get github.com/axw/gocov/gocov
 - go get github.com/mattn/goveralls
@@ -14,7 +11,9 @@ before_install:
 - go get github.com/GeertJohan/fgt
 - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover;
   fi
-  
 script:
 - fgt golint $(find . | grep .go$ | grep -v .pb.go)
 - $HOME/gopath/bin/goveralls -service=travis-ci -ignore=monitor.go github.com/brotherlogic/monitor
+notifications:
+  slack:
+    secure: hQIjmB/VTd/m58WCX6qv+Qm/YJqLc+AfS0EGERnvDQjArX7LaeF15wbY+wUkjx1ZrxQ523DyqOqzHM3zvrls/vQwbDcXNuipikWP/8/tsGxMfOTR7PKao5UkO9JWJfdG8IAADUQ/1XI3ZJWRrBZQ4DpMpYJKAz7Ji1Wy0MO2iYN1izJrbtuwXBoF54RYr7d6NJdZgKas2BwO92DY8B6vlsxINFKFzjFnkNmC5CcB6mRMjXVn8VQtP6sMVFiQR0+1QekB+s95cZenNnGV2HpbVc4YDl30zijm4uvRKOjlSfN2fRphuP2KAJXM8V/m/n30J7IF6Wx7kAWNYxF953TeBzD59PSJpKSrfNM03usy+icQl4S4nnsYymjI3ij2svaCb65ldrKYBZORoYzh/of3O3OvPqRXwA33lOsQogy5AeKOMGiDfBirZuVlwuy/EY9Pgv7NFmxA6bGrRAtazqXfQ3f8y8QHWkKQW9ATFHe1QltKxpMtMjQgxVosFr6Jf5Fwd4WbgVbkpW6GhUoKrN/kPS9EDEA7Sss4Hkcd/362xVsgMwj1XnTGzc7NHf/ohnGFLkz30mdT2XT/DckvetG77DXS3zfSxbt6AjVj1+rijX2n40Q/AWAOv5hVLqFqM9b/p703U6bHOAzUz0/fnGMhyYEhrVjrmr2tQj14RgZqz7w=
