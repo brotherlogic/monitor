@@ -2,7 +2,7 @@ import os
 import subprocess
 
 # Update to the latest version
-for line in os.popen('git fetch -p -q; git merge -q origin/master').readlines():
+for line in os.popen('go get -u github.com/brotherlogic/monitor').readlines():
     print line.strip()
     
 # Move the old version over
