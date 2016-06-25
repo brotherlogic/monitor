@@ -3,7 +3,7 @@ package main
 import (
 	"google.golang.org/grpc"
 
-	pb "github.com/brotherlogic/monitor/proto"
+	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
 // Register registers the rpc end point

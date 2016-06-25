@@ -1,1 +1,1 @@
-protoc --proto_path ../../../ -I=./proto/ --go_out=plugins=grpc:./proto proto/monitor.proto
+protoc --proto_path ../../../ -I=./monitorproto/ --go_out=plugins=grpc:./monitorproto monitorproto/monitor.proto

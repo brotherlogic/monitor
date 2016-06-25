@@ -7,7 +7,7 @@ import (
 	"time"
 
 	pbr "github.com/brotherlogic/discovery/proto"
-	pb "github.com/brotherlogic/monitor/proto"
+	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
 // Server the main server type
