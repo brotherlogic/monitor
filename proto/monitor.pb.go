@@ -54,64 +54,64 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion3
 
-// Client API for MonitoringService service
+// Client API for MonitorService service
 
-type MonitoringServiceClient interface {
+type MonitorServiceClient interface {
 	ReceiveHeartbeat(ctx context.Context, in *discovery.RegistryEntry, opts ...grpc.CallOption) (*Empty, error)
 }
 
-type monitoringServiceClient struct {
+type monitorServiceClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewMonitoringServiceClient(cc *grpc.ClientConn) MonitoringServiceClient {
-	return &monitoringServiceClient{cc}
+func NewMonitorServiceClient(cc *grpc.ClientConn) MonitorServiceClient {
+	return &monitorServiceClient{cc}
 }
 
-func (c *monitoringServiceClient) ReceiveHeartbeat(ctx context.Context, in *discovery.RegistryEntry, opts ...grpc.CallOption) (*Empty, error) {
+func (c *monitorServiceClient) ReceiveHeartbeat(ctx context.Context, in *discovery.RegistryEntry, opts ...grpc.CallOption) (*Empty, error) {
 	out := new(Empty)
-	err := grpc.Invoke(ctx, "/MonitoringService/ReceiveHeartbeat", in, out, c.cc, opts...)
+	err := grpc.Invoke(ctx, "/MonitorService/ReceiveHeartbeat", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// Server API for MonitoringService service
+// Server API for MonitorService service
 
-type MonitoringServiceServer interface {
+type MonitorServiceServer interface {
 	ReceiveHeartbeat(context.Context, *discovery.RegistryEntry) (*Empty, error)
 }
 
-func RegisterMonitoringServiceServer(s *grpc.Server, srv MonitoringServiceServer) {
-	s.RegisterService(&_MonitoringService_serviceDesc, srv)
+func RegisterMonitorServiceServer(s *grpc.Server, srv MonitorServiceServer) {
+	s.RegisterService(&_MonitorService_serviceDesc, srv)
 }
 
-func _MonitoringService_ReceiveHeartbeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MonitorService_ReceiveHeartbeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(discovery.RegistryEntry)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MonitoringServiceServer).ReceiveHeartbeat(ctx, in)
+		return srv.(MonitorServiceServer).ReceiveHeartbeat(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MonitoringService/ReceiveHeartbeat",
+		FullMethod: "/MonitorService/ReceiveHeartbeat",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MonitoringServiceServer).ReceiveHeartbeat(ctx, req.(*discovery.RegistryEntry))
+		return srv.(MonitorServiceServer).ReceiveHeartbeat(ctx, req.(*discovery.RegistryEntry))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _MonitoringService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "MonitoringService",
-	HandlerType: (*MonitoringServiceServer)(nil),
+var _MonitorService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "MonitorService",
+	HandlerType: (*MonitorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "ReceiveHeartbeat",
-			Handler:    _MonitoringService_ReceiveHeartbeat_Handler,
+			Handler:    _MonitorService_ReceiveHeartbeat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -121,15 +121,15 @@ var _MonitoringService_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("monitor.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 153 bytes of a gzipped FileDescriptorProto
+	// 150 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0xe2, 0xcd, 0xcd, 0xcf, 0xcb,
 	0x2c, 0xc9, 0x2f, 0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x97, 0x32, 0x4f, 0xcf, 0x2c, 0xc9, 0x28,
 	0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0x02, 0x8a, 0x64, 0xa4, 0x16, 0xe5, 0xe4, 0xa7, 0x67,
 	0x26, 0xeb, 0xa7, 0x64, 0x16, 0x27, 0xe7, 0x97, 0xa5, 0x16, 0x55, 0xea, 0x83, 0x15, 0x22, 0xf8,
-	0x10, 0x8d, 0x4a, 0xec, 0x5c, 0xac, 0xae, 0xb9, 0x05, 0x25, 0x95, 0x46, 0x8e, 0x5c, 0x82, 0xbe,
-	0x10, 0x23, 0x33, 0xf3, 0xd2, 0x83, 0x53, 0x8b, 0xca, 0x32, 0x93, 0x53, 0x85, 0x74, 0xb8, 0x04,
-	0x82, 0x52, 0x93, 0x53, 0x33, 0xcb, 0x52, 0x3d, 0x52, 0x13, 0x8b, 0x4a, 0x92, 0x52, 0x13, 0x4b,
-	0x84, 0xf8, 0xf4, 0x82, 0x52, 0xd3, 0x33, 0x8b, 0x4b, 0x8a, 0x2a, 0x5d, 0xf3, 0x80, 0x84, 0x14,
-	0x9b, 0x1e, 0xd8, 0x00, 0x25, 0x86, 0x24, 0x36, 0xb0, 0x91, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0x69, 0xc6, 0x31, 0x73, 0x9c, 0x00, 0x00, 0x00,
+	0x10, 0x8d, 0x4a, 0xec, 0x5c, 0xac, 0xae, 0xb9, 0x05, 0x25, 0x95, 0x46, 0x76, 0x5c, 0x7c, 0xbe,
+	0x10, 0x23, 0x83, 0x53, 0x8b, 0xca, 0x32, 0x93, 0x53, 0x85, 0x74, 0xb8, 0x04, 0x82, 0x52, 0x93,
+	0x53, 0x33, 0xcb, 0x52, 0x3d, 0x52, 0x13, 0x8b, 0x4a, 0x92, 0x52, 0x13, 0x4b, 0x84, 0xf8, 0xf4,
+	0x82, 0x52, 0xd3, 0x33, 0x8b, 0x4b, 0x8a, 0x2a, 0x5d, 0xf3, 0x80, 0x84, 0x14, 0x9b, 0x1e, 0x58,
+	0xb7, 0x12, 0x43, 0x12, 0x1b, 0xd8, 0x3c, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x97, 0xca,
+	0xbd, 0x5e, 0x99, 0x00, 0x00, 0x00,
 }

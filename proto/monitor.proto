@@ -4,7 +4,6 @@ import "github.com/brotherlogic/discovery/proto/discovery.proto";
 
 message Empty {}
 
-service MonitoringService {
-
+service MonitorService {
         rpc ReceiveHeartbeat (RegistryEntry) returns (Empty) {}
 }
