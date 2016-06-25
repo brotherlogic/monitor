@@ -14,4 +14,5 @@ func (s *Server) Register(server *grpc.Server) {
 func main() {
 	s := InitServer()
 	s.RegisterServer("monitor", true)
+	s.Serve()
 }
