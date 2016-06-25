@@ -14,5 +14,5 @@ func (s *Server) Register(server *grpc.Server) {
 func main() {
 	s := Server{}
 	s.RegisterServer(true)
-	s.Serve()
+	s.Serve("monitor")
 }
