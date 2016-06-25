@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package monitor;
+
 import "github.com/brotherlogic/discovery/proto/discovery.proto";
 
 message Empty {}
