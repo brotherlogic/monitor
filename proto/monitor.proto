@@ -4,6 +4,14 @@ import "github.com/brotherlogic/discovery/proto/discovery.proto";
 
 message Empty {}
 
+message Heartbeat {
+        //The entry
+        discovery.RegistryEntry entry = 1;
+
+        //The time of the beat
+        int64 beat_time = 2;
+}
+
 service MonitorService {
-        rpc ReceiveHeartbeat (RegistryEntry) returns (Empty) {}
+        rpc ReceiveHeartbeat (discovery.RegistryEntry) returns (Heartbeat) {}
 }
