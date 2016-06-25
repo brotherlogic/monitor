@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package monitorproto;
+
+import "github.com/brotherlogic/discovery/proto/discovery.proto";
+
+message Empty {}
+
+message Heartbeat {
+        //The entry
+        discovery.RegistryEntry entry = 1;
+
+        //The time of the beat
+        int64 beat_time = 2;
+}
+
+message HeartbeatList {
+        repeated Heartbeat beats = 1;
+}
+
+service MonitorService {
+        rpc ReceiveHeartbeat (discovery.RegistryEntry) returns (Heartbeat) {}
+        rpc GetHeartbeats (Empty) returns (HeartbeatList) {}
+}
