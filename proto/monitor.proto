@@ -12,6 +12,11 @@ message Heartbeat {
         int64 beat_time = 2;
 }
 
+message HeartbeatList {
+        repeated Heartbeat beats = 1;
+}
+
 service MonitorService {
         rpc ReceiveHeartbeat (discovery.RegistryEntry) returns (Heartbeat) {}
+        rpc GetHeartbeats (Empty) returns (HeartbeatList) {}
 }
