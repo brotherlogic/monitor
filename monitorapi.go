@@ -19,8 +19,8 @@ type Server struct {
 
 // InitServer creates a monitoring server
 func InitServer() Server {
-	s := Server{}
-	s.heartbeats = make([]*pb.Heartbeat, 0)
+	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0)}
+	s.SetRegisterable(&s)
 	return s
 }
 
