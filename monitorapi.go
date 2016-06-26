@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/brotherlogic/goserver"
 	"golang.org/x/net/context"
+
 	"log"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 
 // Server the main server type
 type Server struct {
-	goserver.GoServer
+	*goserver.GoServer
 	heartbeats []*pb.Heartbeat
 }
 
