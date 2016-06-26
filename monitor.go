@@ -6,13 +6,14 @@ import (
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
-// Register Registers this server
-func (s *Server) Register(server *grpc.Server) {
-	pb.RegisterMonitorServiceServer(server, s)
+// DoRegister Registers this server
+func (s Server) DoRegister(server *grpc.Server) {
+	pb.RegisterMonitorServiceServer(server, &s)
 }
 
 func main() {
 	s := InitServer()
+	s.PrepServer()
 	s.RegisterServer("monitor", true)
 	s.Serve()
 }
