@@ -6,7 +6,7 @@ import (
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
-// Register registers the rpc end point
+// Register Registers this server
 func (s *Server) Register(server *grpc.Server) {
 	pb.RegisterMonitorServiceServer(server, s)
 }
