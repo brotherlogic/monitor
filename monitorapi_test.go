@@ -25,6 +25,10 @@ func TestHeatBeatTime(t *testing.T) {
 	if r3.GetBeats()[0].BeatTime == firstTime {
 		t.Errorf("Time has not updated")
 	}
+
+	if r3.GetBeats()[0].Entry.Name != "Test" {
+		t.Errorf("Name is not being returned %v", r3.GetBeats()[0])
+	}
 }
 
 func TestHeartBeat(t *testing.T) {
