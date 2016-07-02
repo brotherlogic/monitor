@@ -31,6 +31,16 @@ func (s *Server) ReceiveHeartbeat(ctx context.Context, in *pbr.RegistryEntry) (*
 	return heartbeat, nil
 }
 
+// WriteMessageLog Writes out a message log
+func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
+	return &pb.LogWriteResponse{}, nil
+}
+
+// WriteValueLog Writes out a value log
+func (s *Server) WriteValueLog(ctx context.Context, in *pb.ValueLog) (*pb.LogWriteResponse, error) {
+	return &pb.LogWriteResponse{}, nil
+}
+
 // GetHeartbeats gets the list of per job heartbeats
 func (s *Server) GetHeartbeats(ctx context.Context, in *pb.Empty) (*pb.HeartbeatList, error) {
 	var mapper map[string]*pb.Heartbeat
