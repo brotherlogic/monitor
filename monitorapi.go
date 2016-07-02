@@ -2,9 +2,12 @@ package main
 
 import (
 	"github.com/brotherlogic/goserver"
+	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
-
+	"io/ioutil"
 	"log"
+	"os"
+	"strconv"
 	"time"
 
 	pbr "github.com/brotherlogic/discovery/proto"
@@ -14,12 +17,23 @@ import (
 // Server the main server type
 type Server struct {
 	*goserver.GoServer
-	heartbeats []*pb.Heartbeat
+	heartbeats   []*pb.Heartbeat
+	logDirectory string
+}
+
+func (s *Server) getLogPath(name string, identifier string, logType string) (string, int64) {
+	path := s.logDirectory + "/" + name + "/" + identifier + "/"
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.MkdirAll(path, 0777)
+	}
+
+	timestamp := time.Now().Unix()
+	return path + strconv.Itoa(int(timestamp)) + "." + logType, timestamp
 }
 
 // InitServer creates a monitoring server
 func InitServer() Server {
-	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0)}
+	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs"}
 	s.Register = s
 	return s
 }
@@ -33,12 +47,20 @@ func (s *Server) ReceiveHeartbeat(ctx context.Context, in *pbr.RegistryEntry) (*
 
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
-	return &pb.LogWriteResponse{}, nil
+	path, timestamp := s.getLogPath(in.Entry.Name, in.Entry.Identifier, "message")
+	data, _ := proto.Marshal(in)
+	ioutil.WriteFile(path, data, 0644)
+
+	return &pb.LogWriteResponse{Success: true, Timestamp: timestamp}, nil
 }
 
 // WriteValueLog Writes out a value log
 func (s *Server) WriteValueLog(ctx context.Context, in *pb.ValueLog) (*pb.LogWriteResponse, error) {
-	return &pb.LogWriteResponse{}, nil
+	path, timestamp := s.getLogPath(in.Entry.Name, in.Entry.Identifier, "value")
+	data, _ := proto.Marshal(in)
+	ioutil.WriteFile(path, data, 0644)
+
+	return &pb.LogWriteResponse{Success: true, Timestamp: timestamp}, nil
 }
 
 // GetHeartbeats gets the list of per job heartbeats

@@ -32,7 +32,11 @@ message ValueLog {
 }
 
 message LogWriteResponse {
+        // Whether the log was written
         bool success = 1;
+
+        //The timestamp at which the log was written
+        int64 timestamp = 2;
 }
 
 service MonitorService {
