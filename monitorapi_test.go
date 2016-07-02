@@ -9,6 +9,28 @@ import (
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
+func TestWriteValueLog(t *testing.T) {
+	s := InitServer()
+
+	registry := &pbr.RegistryEntry{Identifier: "Blah", Name: "Test"}
+	valueLog := &pb.ValueLog{Entry: registry, Value: 35.5}
+	_, err := s.WriteValueLog(context.Background(), valueLog)
+	if err != nil {
+		t.Errorf("Write Value Log has returned an error")
+	}
+}
+
+func TestWriteMessageLog(t *testing.T) {
+	s := InitServer()
+
+	registry := &pbr.RegistryEntry{Identifier: "Blah", Name: "Test"}
+	messageLog := &pb.MessageLog{Entry: registry, Message: "This is the log message"}
+	_, err := s.WriteMessageLog(context.Background(), messageLog)
+	if err != nil {
+		t.Errorf("Write Value Log has returned an error")
+	}
+}
+
 func TestHeatBeatTime(t *testing.T) {
 	s := InitServer()
 	r, _ := s.ReceiveHeartbeat(context.Background(), &pbr.RegistryEntry{Identifier: "Blah", Name: "Test"})
