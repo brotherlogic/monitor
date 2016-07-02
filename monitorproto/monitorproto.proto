@@ -18,7 +18,27 @@ message HeartbeatList {
         repeated Heartbeat beats = 1;
 }
 
+message MessageLog {
+        // The entry writing the log
+        discovery.RegistryEntry entry = 1;
+
+        // The message to be written to the logs
+        string message = 2;
+}
+
+message ValueLog {
+        discovery.RegistryEntry entry = 1;
+        float value = 2;
+}
+
+message LogWriteResponse {
+        bool success = 1;
+}
+
 service MonitorService {
         rpc ReceiveHeartbeat (discovery.RegistryEntry) returns (Heartbeat) {}
         rpc GetHeartbeats (Empty) returns (HeartbeatList) {}
+
+        rpc WriteMessageLog(MessageLog) returns (LogWriteResponse) {}
+        rpc WriteValueLog(ValueLog) returns (LogWriteResponse) {}
 }
