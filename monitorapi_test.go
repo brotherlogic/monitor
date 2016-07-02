@@ -2,6 +2,8 @@ package main
 
 import (
 	"golang.org/x/net/context"
+	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -9,30 +11,47 @@ import (
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
-func TestWriteValueLog(t *testing.T) {
+func InitTestServer() Server {
 	s := InitServer()
+	s.logDirectory = "testlogs"
+	return s
+}
+
+func TestWriteValueLog(t *testing.T) {
+	s := InitTestServer()
 
 	registry := &pbr.RegistryEntry{Identifier: "Blah", Name: "Test"}
 	valueLog := &pb.ValueLog{Entry: registry, Value: 35.5}
-	_, err := s.WriteValueLog(context.Background(), valueLog)
+	r, err := s.WriteValueLog(context.Background(), valueLog)
 	if err != nil {
 		t.Errorf("Write Value Log has returned an error")
+	}
+
+	//Check that the log has been written in the required directory
+	if _, err := os.Stat("testlogs/Test/Blah/" + strconv.Itoa(int(r.Timestamp)) + ".value"); os.IsNotExist(err) {
+		t.Errorf("Logs do not exist")
 	}
 }
 
 func TestWriteMessageLog(t *testing.T) {
-	s := InitServer()
+	s := InitTestServer()
 
 	registry := &pbr.RegistryEntry{Identifier: "Blah", Name: "Test"}
 	messageLog := &pb.MessageLog{Entry: registry, Message: "This is the log message"}
-	_, err := s.WriteMessageLog(context.Background(), messageLog)
+	r, err := s.WriteMessageLog(context.Background(), messageLog)
 	if err != nil {
 		t.Errorf("Write Value Log has returned an error")
 	}
+
+	//Check that the log has been written in the required directory
+	if _, err := os.Stat("testlogs/Test/Blah/" + strconv.Itoa(int(r.Timestamp)) + ".message"); os.IsNotExist(err) {
+		t.Errorf("Logs do not exist")
+	}
+
 }
 
 func TestHeatBeatTime(t *testing.T) {
-	s := InitServer()
+	s := InitTestServer()
 	r, _ := s.ReceiveHeartbeat(context.Background(), &pbr.RegistryEntry{Identifier: "Blah", Name: "Test"})
 
 	firstTime := r.BeatTime
@@ -54,7 +73,7 @@ func TestHeatBeatTime(t *testing.T) {
 }
 
 func TestHeartBeat(t *testing.T) {
-	s := InitServer()
+	s := InitTestServer()
 	r, err := s.ReceiveHeartbeat(context.Background(), &pbr.RegistryEntry{})
 	if err != nil {
 		t.Errorf("Unable to send heartbeat: %v", err)
