@@ -49,6 +49,7 @@ func (s *Server) ReceiveHeartbeat(ctx context.Context, in *pbr.RegistryEntry) (*
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
 	path, timestamp := s.getLogPath(in.Entry.Name, in.Entry.Identifier, "message")
+	in.Timestamps = timestamp
 	data, _ := proto.Marshal(in)
 	ioutil.WriteFile(path, data, 0644)
 
@@ -61,7 +62,7 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 	files, _ := ioutil.ReadDir(path)
 	response := &pb.MessageLogReadResponse{}
 	for _, file := range files {
-		data, _ := ioutil.ReadFile(file.Name())
+		data, _ := ioutil.ReadFile(path + file.Name())
 		logPb := &pb.MessageLog{}
 		proto.Unmarshal(data, logPb)
 		response.Logs = append(response.Logs, logPb)
