@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/brotherlogic/goserver"
-	"github.com/golang/protobuf/proto"
-	"golang.org/x/net/context"
 	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/brotherlogic/goserver"
+	"github.com/golang/protobuf/proto"
+	"golang.org/x/net/context"
 
 	pbr "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/monitor/monitorproto"
@@ -52,6 +53,20 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 	ioutil.WriteFile(path, data, 0644)
 
 	return &pb.LogWriteResponse{Success: true, Timestamp: timestamp}, nil
+}
+
+// ReadMessageLogs Reads and returns the message logs for a given entry
+func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*pb.MessageLogReadResponse, error) {
+	path := s.logDirectory + "/" + in.Name + "/" + in.Identifier + "/"
+	files, _ := ioutil.ReadDir(path)
+	response := &pb.MessageLogReadResponse{}
+	for _, file := range files {
+		data, _ := ioutil.ReadFile(file.Name())
+		logPb := &pb.MessageLog{}
+		proto.Unmarshal(data, logPb)
+		response.Logs = append(response.Logs, logPb)
+	}
+	return response, nil
 }
 
 // WriteValueLog Writes out a value log
