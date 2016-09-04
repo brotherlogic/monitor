@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"os"
 	"strconv"
 	"testing"
@@ -10,6 +11,7 @@ import (
 
 	pbr "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/monitor/monitorproto"
+	"github.com/golang/protobuf/proto"
 )
 
 func InitTestServer() Server {
@@ -69,6 +71,13 @@ func TestWriteMessageLog(t *testing.T) {
 		t.Errorf("Logs do not exist")
 	}
 
+	//Read in the file and check it has a Timestamp
+	messageLogRead := &pb.MessageLog{}
+	data, _ := ioutil.ReadFile("testlogs/Test/Blah/" + strconv.Itoa(int(r.Timestamp)) + ".message")
+	proto.Unmarshal(data, messageLogRead)
+	if messageLogRead.Timestamps == 0 {
+		t.Errorf("Timestamp is wrong: %v", messageLogRead)
+	}
 }
 
 func TestHeatBeatTime(t *testing.T) {

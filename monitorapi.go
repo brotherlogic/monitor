@@ -49,6 +49,7 @@ func (s *Server) ReceiveHeartbeat(ctx context.Context, in *pbr.RegistryEntry) (*
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
 	path, timestamp := s.getLogPath(in.Entry.Name, in.Entry.Identifier, "message")
+	in.Timestamps = timestamp
 	data, _ := proto.Marshal(in)
 	ioutil.WriteFile(path, data, 0644)
 
