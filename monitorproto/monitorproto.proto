@@ -24,6 +24,9 @@ message MessageLog {
 
         // The message to be written to the logs
         string message = 2;
+
+        // The timestamp of the written log
+        int64 timestamps = 3;
 }
 
 message ValueLog {
@@ -39,10 +42,17 @@ message LogWriteResponse {
         int64 timestamp = 2;
 }
 
+message MessageLogReadResponse {
+  // The response from the logs
+  repeated MessageLog logs = 1;
+}
+
 service MonitorService {
         rpc ReceiveHeartbeat (discovery.RegistryEntry) returns (Heartbeat) {}
         rpc GetHeartbeats (Empty) returns (HeartbeatList) {}
 
         rpc WriteMessageLog(MessageLog) returns (LogWriteResponse) {}
         rpc WriteValueLog(ValueLog) returns (LogWriteResponse) {}
+
+        rpc ReadMessageLogs (discovery.RegistryEntry) returns (MessageLogReadResponse) {}
 }
