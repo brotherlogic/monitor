@@ -62,7 +62,7 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 	files, _ := ioutil.ReadDir(path)
 	response := &pb.MessageLogReadResponse{}
 	for _, file := range files {
-		data, _ := ioutil.ReadFile(file.Name())
+		data, _ := ioutil.ReadFile(path + file.Name())
 		logPb := &pb.MessageLog{}
 		proto.Unmarshal(data, logPb)
 		response.Logs = append(response.Logs, logPb)

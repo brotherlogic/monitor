@@ -38,6 +38,10 @@ func TestReadMessageLogs(t *testing.T) {
 	if len(logs.Logs) != 1 {
 		t.Errorf("Too many logs: %v", len(logs.Logs))
 	}
+
+	if logs.Logs[0].Message != "This is the log message" {
+		t.Errorf("Read log the wrong: %v", logs.Logs[0])
+	}
 }
 
 func TestWriteValueLog(t *testing.T) {
