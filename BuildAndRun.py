@@ -14,10 +14,6 @@ for line in os.popen('cp ' + name + ' old' + name).readlines():
     print line.strip()
 
 # Rebuild
-for line in os.popen('go build ./...').readlines():
-    print line.strip()
-
-# Rebuild
 for line in os.popen('go build').readlines():
     print line.strip()
 
