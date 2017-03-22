@@ -16,6 +16,7 @@ import (
 
 func InitTestServer() Server {
 	s := InitServer()
+	s.write = true
 	s.logDirectory = "testlogs"
 	os.RemoveAll(s.logDirectory)
 	return s

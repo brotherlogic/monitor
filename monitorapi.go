@@ -20,6 +20,7 @@ type Server struct {
 	*goserver.GoServer
 	heartbeats   []*pb.Heartbeat
 	logDirectory string
+	write        bool
 }
 
 func (s *Server) getLogPath(name string, identifier string, logType string) (string, int64) {
@@ -34,7 +35,7 @@ func (s *Server) getLogPath(name string, identifier string, logType string) (str
 
 // InitServer creates a monitoring server
 func InitServer() Server {
-	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs"}
+	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", false}
 	s.Register = s
 	return s
 }
@@ -51,7 +52,10 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 	path, timestamp := s.getLogPath(in.Entry.Name, in.Entry.Identifier, "message")
 	in.Timestamps = timestamp
 	data, _ := proto.Marshal(in)
-	ioutil.WriteFile(path, data, 0644)
+
+	if s.write {
+		ioutil.WriteFile(path, data, 0644)
+	}
 
 	return &pb.LogWriteResponse{Success: true, Timestamp: timestamp}, nil
 }
@@ -74,8 +78,10 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 func (s *Server) WriteValueLog(ctx context.Context, in *pb.ValueLog) (*pb.LogWriteResponse, error) {
 	path, timestamp := s.getLogPath(in.Entry.Name, in.Entry.Identifier, "value")
 	data, _ := proto.Marshal(in)
-	ioutil.WriteFile(path, data, 0644)
 
+	if s.write {
+		ioutil.WriteFile(path, data, 0644)
+	}
 	return &pb.LogWriteResponse{Success: true, Timestamp: timestamp}, nil
 }
 
