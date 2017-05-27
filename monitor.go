@@ -11,7 +11,7 @@ func (s Server) DoRegister(server *grpc.Server) {
 	pb.RegisterMonitorServiceServer(server, &s)
 }
 
-// ReportHealth indicates if we are healthy
+// ReportHealth alerts if we're not healthy
 func (s Server) ReportHealth() bool {
 	return true
 }
