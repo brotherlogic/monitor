@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -21,6 +22,7 @@ type Server struct {
 	heartbeats   []*pb.Heartbeat
 	logDirectory string
 	write        bool
+	stats        []*pb.Stats
 }
 
 func (s *Server) getLogPath(name string, identifier string, logType string) (string, int64) {
@@ -35,7 +37,7 @@ func (s *Server) getLogPath(name string, identifier string, logType string) (str
 
 // InitServer creates a monitoring server
 func InitServer() Server {
-	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", false}
+	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", false, make([]*pb.Stats, 0)}
 	s.Register = s
 	return s
 }
@@ -83,6 +85,38 @@ func (s *Server) WriteValueLog(ctx context.Context, in *pb.ValueLog) (*pb.LogWri
 		ioutil.WriteFile(path, data, 0644)
 	}
 	return &pb.LogWriteResponse{Success: true, Timestamp: timestamp}, nil
+}
+
+// GetStats gets the stats for a given function call
+func (s *Server) GetStats(ctx context.Context, in *pb.FunctionCall) (*pb.Stats, error) {
+	for _, st := range s.stats {
+		if st.Binary == in.Binary && st.Name == in.Name {
+			return st, nil
+		}
+	}
+
+	return nil, errors.New("Unable to find stats")
+}
+
+//WriteFunctionCall writes a function call to the monitoring
+func (s *Server) WriteFunctionCall(ctx context.Context, in *pb.FunctionCall) (*pb.Empty, error) {
+	var st *pb.Stats
+	for _, sta := range s.stats {
+		log.Printf("Trying: %v -> %v", sta, in)
+		if sta.Binary == in.Binary && sta.Name == in.Name {
+			st = sta
+		}
+	}
+
+	if st == nil {
+		st = &pb.Stats{Name: in.Name, Binary: in.Binary, NumberOfCalls: 1, MeanRunTime: in.Time}
+		s.stats = append(s.stats, st)
+	} else {
+		st.NumberOfCalls++
+		st.MeanRunTime = st.MeanRunTime/st.NumberOfCalls + in.Time/st.NumberOfCalls
+	}
+
+	return &pb.Empty{}, nil
 }
 
 // GetHeartbeats gets the list of per job heartbeats

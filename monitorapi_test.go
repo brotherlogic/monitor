@@ -61,6 +61,42 @@ func TestWriteValueLog(t *testing.T) {
 	}
 }
 
+func TestMonitorFunctionCalls(t *testing.T) {
+	s := InitTestServer()
+
+	_, err := s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 340})
+	if err != nil {
+		t.Errorf("Failure to write the function call: %v", err)
+	}
+	_, err = s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 340})
+	if err != nil {
+		t.Errorf("Failure to write the function call: %v", err)
+	}
+
+	stats, err := s.GetStats(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction"})
+	if err != nil {
+		t.Errorf("Failure to produce stats: %v", err)
+	}
+
+	if stats.NumberOfCalls != 2 || stats.MeanRunTime != 340 {
+		t.Errorf("Stats have come back wrong: %v", stats)
+	}
+}
+
+func TestPullNonFunction(t *testing.T) {
+	s := InitTestServer()
+
+	_, err := s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 340})
+	if err != nil {
+		t.Errorf("Failure to write the function call: %v", err)
+	}
+
+	stats, err := s.GetStats(context.Background(), &pb.FunctionCall{Binary: "madeupbinary", Name: "RunFunction"})
+	if err == nil {
+		t.Errorf("Stats have come back even though they shouldn't: %v", stats)
+	}
+}
+
 func TestWriteMessageLog(t *testing.T) {
 	s := InitTestServer()
 

@@ -47,6 +47,19 @@ message MessageLogReadResponse {
   repeated MessageLog logs = 1;
 }
 
+message FunctionCall {
+  string binary = 1;
+  string name = 2;
+  int32 time = 3;
+}
+
+message Stats {
+  string binary = 1;
+  string name = 2;
+  int32 number_of_calls = 3;
+  int32 mean_run_time = 4;
+}
+
 service MonitorService {
         rpc ReceiveHeartbeat (discovery.RegistryEntry) returns (Heartbeat) {}
         rpc GetHeartbeats (Empty) returns (HeartbeatList) {}
@@ -55,4 +68,7 @@ service MonitorService {
         rpc WriteValueLog(ValueLog) returns (LogWriteResponse) {}
 
         rpc ReadMessageLogs (discovery.RegistryEntry) returns (MessageLogReadResponse) {}
+
+        rpc WriteFunctionCall (FunctionCall) returns (Empty) {}
+        rpc GetStats(FunctionCall) returns (Stats) {}
 }

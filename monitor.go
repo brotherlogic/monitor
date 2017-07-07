@@ -16,6 +16,11 @@ func (s Server) ReportHealth() bool {
 	return true
 }
 
+// Mote promotes/demotes this server
+func (s Server) Mote(master bool) error {
+	return nil
+}
+
 func main() {
 	s := InitServer()
 	s.PrepServer()
