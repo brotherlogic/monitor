@@ -88,10 +88,14 @@ func (s *Server) WriteValueLog(ctx context.Context, in *pb.ValueLog) (*pb.LogWri
 }
 
 // GetStats gets the stats for a given function call
-func (s *Server) GetStats(ctx context.Context, in *pb.FunctionCall) (*pb.Stats, error) {
+func (s *Server) GetStats(ctx context.Context, in *pb.FunctionCall) (*pb.StatsList, error) {
+	if in.Binary == "" && in.Name == "" {
+		return &pb.StatsList{Stats: s.stats}, nil
+	}
+
 	for _, st := range s.stats {
 		if st.Binary == in.Binary && st.Name == in.Name {
-			return st, nil
+			return &pb.StatsList{Stats: []*pb.Stats{st}}, nil
 		}
 	}
 
