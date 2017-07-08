@@ -52,7 +52,7 @@ func main() {
 			defer conn.Close()
 
 			monitor := pb.NewMonitorServiceClient(conn)
-			stats, err := monitor.GetStats(context.Background(), &pb.FunctionCall{Binary: "discogssyncer", Name: "GetSingleRelease"})
+			stats, err := monitor.GetStats(context.Background(), &pb.FunctionCall{})
 			if err != nil {
 				log.Printf("Error getting stats: %v", err)
 			}
