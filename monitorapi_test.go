@@ -83,6 +83,28 @@ func TestMonitorFunctionCalls(t *testing.T) {
 	}
 }
 
+func TestMonitorAll(t *testing.T) {
+	s := InitTestServer()
+
+	_, err := s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 340})
+	if err != nil {
+		t.Errorf("Failure to write the function call: %v", err)
+	}
+	_, err = s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 340})
+	if err != nil {
+		t.Errorf("Failure to write the function call: %v", err)
+	}
+
+	stats, err := s.GetStats(context.Background(), &pb.FunctionCall{})
+	if err != nil {
+		t.Errorf("Failure to produce stats: %v", err)
+	}
+
+	if stats.Stats[0].NumberOfCalls != 2 || stats.Stats[0].MeanRunTime != 340 {
+		t.Errorf("Stats have come back wrong: %v", stats)
+	}
+}
+
 func TestPullNonFunction(t *testing.T) {
 	s := InitTestServer()
 
