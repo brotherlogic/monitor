@@ -61,6 +61,32 @@ func TestWriteValueLog(t *testing.T) {
 	}
 }
 
+func TestComputingMeanOnFunctionCalls(t *testing.T) {
+	s := InitTestServer()
+
+	_, err := s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 10})
+	if err != nil {
+		t.Errorf("Failure to write the function call: %v", err)
+	}
+	_, err = s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 20})
+	if err != nil {
+		t.Errorf("Failure to write the function call: %v", err)
+	}
+	_, err = s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 30})
+	if err != nil {
+		t.Errorf("Failure to write the function call: %v", err)
+	}
+
+	stats, err := s.GetStats(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction"})
+	if err != nil {
+		t.Errorf("Failure to produce stats: %v", err)
+	}
+
+	if stats.Stats[0].NumberOfCalls != 3 || stats.Stats[0].MeanRunTime != 20 {
+		t.Errorf("Stats have come back wrong: %v", stats)
+	}
+}
+
 func TestMonitorFunctionCalls(t *testing.T) {
 	s := InitTestServer()
 
