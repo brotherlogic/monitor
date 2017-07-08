@@ -78,7 +78,7 @@ func TestMonitorFunctionCalls(t *testing.T) {
 		t.Errorf("Failure to produce stats: %v", err)
 	}
 
-	if stats.NumberOfCalls != 2 || stats.MeanRunTime != 340 {
+	if stats.Stats[0].NumberOfCalls != 2 || stats.Stats[0].MeanRunTime != 340 {
 		t.Errorf("Stats have come back wrong: %v", stats)
 	}
 }
