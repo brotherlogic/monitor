@@ -87,6 +87,15 @@ func TestComputingMeanOnFunctionCalls(t *testing.T) {
 	}
 }
 
+func TestWriteEmptyFunctionCall(t *testing.T) {
+	s := InitTestServer()
+
+	_, err := s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 0})
+	if err != nil {
+		t.Errorf("Failure to write the function call: %v", err)
+	}
+}
+
 func TestMonitorFunctionCalls(t *testing.T) {
 	s := InitTestServer()
 
