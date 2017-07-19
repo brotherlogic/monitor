@@ -56,7 +56,9 @@ func main() {
 			if err != nil {
 				log.Printf("Error getting stats: %v", err)
 			}
-			fmt.Printf("Stats: %v\n", stats)
+			for _, stat := range stats.Stats {
+				fmt.Printf("Stats: %v\n", stat)
+			}
 		}
 	}
 }

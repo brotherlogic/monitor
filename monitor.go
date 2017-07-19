@@ -24,6 +24,7 @@ func (s Server) Mote(master bool) error {
 func main() {
 	s := InitServer()
 	s.PrepServer()
+	s.GoServer.Killme = false
 	s.RegisterServer("monitor", true)
 	s.Serve()
 }
