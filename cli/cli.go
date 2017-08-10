@@ -21,22 +21,13 @@ func findServer(name string) (string, int) {
 	defer conn.Close()
 
 	registry := pbdi.NewDiscoveryServiceClient(conn)
-	rs, err := registry.ListAllServices(context.Background(), &pbdi.Empty{})
+	r, err := registry.Discover(context.Background(), &pbdi.RegistryEntry{Name: "monitor"})
 
 	if err != nil {
 		log.Fatalf("Failure to list: %v", err)
 	}
 
-	for _, r := range rs.Services {
-		if r.Name == name {
-			log.Printf("%v -> %v", name, r)
-			return r.Ip, int(r.Port)
-		}
-	}
-
-	log.Printf("No Cardserver running")
-
-	return "", -1
+	return r.Ip, int(r.Port)
 }
 
 func main() {
