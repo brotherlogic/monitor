@@ -6,6 +6,11 @@ import (
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
+const (
+	//The number of function call details to keep
+	numCalls = 100
+)
+
 // DoRegister Registers this server
 func (s Server) DoRegister(server *grpc.Server) {
 	pb.RegisterMonitorServiceServer(server, &s)
