@@ -48,7 +48,7 @@ func main() {
 				log.Printf("Error getting stats: %v", err)
 			}
 			for _, stat := range stats.Stats {
-				fmt.Printf("Stats: %v\n", stat)
+				fmt.Printf("Stats: %v -> %v (%v)\n", stat.Binary+"-"+stat.Name, stat.MeanRunTime, stat.NumberOfCalls)
 			}
 		}
 	}
