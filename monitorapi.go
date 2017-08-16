@@ -87,14 +87,26 @@ func (s *Server) WriteValueLog(ctx context.Context, in *pb.ValueLog) (*pb.LogWri
 	return &pb.LogWriteResponse{Success: true, Timestamp: timestamp}, nil
 }
 
+func recompute(st *pb.Stats) {
+	sum := int32(0)
+	for _, t := range st.RunTimes {
+		sum += t
+	}
+	st.MeanRunTime = sum / int32(len(st.RunTimes))
+}
+
 // GetStats gets the stats for a given function call
 func (s *Server) GetStats(ctx context.Context, in *pb.FunctionCall) (*pb.StatsList, error) {
 	if in.Binary == "" && in.Name == "" {
+		for _, st := range s.stats {
+			recompute(st)
+		}
 		return &pb.StatsList{Stats: s.stats}, nil
 	}
 
 	for _, st := range s.stats {
 		if st.Binary == in.Binary && st.Name == in.Name {
+			recompute(st)
 			return &pb.StatsList{Stats: []*pb.Stats{st}}, nil
 		}
 	}
@@ -120,13 +132,16 @@ func (s *Server) WriteFunctionCall(ctx context.Context, in *pb.FunctionCall) (*p
 	}
 
 	if st == nil {
-		st = &pb.Stats{Name: in.Name, Binary: in.Binary, NumberOfCalls: 1, MeanRunTime: in.Time}
+		st = &pb.Stats{Name: in.Name, Binary: in.Binary, NumberOfCalls: 1, MeanRunTime: in.Time, RunTimes: []int32{in.Time}}
 		s.stats = append(s.stats, st)
 	} else {
 		st.NumberOfCalls++
-		log.Printf("WORKING WITH %v", st)
 		st.MeanRunTime = (st.MeanRunTime*(st.NumberOfCalls-1))/st.NumberOfCalls + in.Time/st.NumberOfCalls
-		log.Printf("COMPUTED %v", st.MeanRunTime)
+		st.RunTimes = append(st.RunTimes, in.Time)
+
+		if len(st.RunTimes) > numCalls {
+			st.RunTimes = st.RunTimes[len(st.RunTimes)-numCalls : len(st.RunTimes)-1]
+		}
 	}
 
 	return &pb.Empty{}, nil

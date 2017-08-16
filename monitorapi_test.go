@@ -135,8 +135,28 @@ func TestMonitorAll(t *testing.T) {
 		t.Errorf("Failure to produce stats: %v", err)
 	}
 
-	if stats.Stats[0].NumberOfCalls != 2 || stats.Stats[0].MeanRunTime != 340 {
+	if stats.Stats[0].NumberOfCalls != 2 || stats.Stats[0].MeanRunTime != 340 || len(stats.Stats[0].RunTimes) != 2 {
 		t.Errorf("Stats have come back wrong: %v", stats)
+	}
+}
+
+func TestTrimFunctionCalls(t *testing.T) {
+	s := InitTestServer()
+
+	for i := 0; i < 200; i++ {
+		_, err := s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 340})
+		if err != nil {
+			t.Errorf("Failure to write the function call: %v", err)
+		}
+	}
+
+	stats, err := s.GetStats(context.Background(), &pb.FunctionCall{})
+	if err != nil {
+		t.Errorf("Failure to produce stats: %v", err)
+	}
+
+	if stats.Stats[0].NumberOfCalls != 200 || stats.Stats[0].MeanRunTime != 340 || len(stats.Stats[0].RunTimes) != 100 {
+		t.Errorf("Stats have come back wrong: %v, %v, %v", stats.Stats[0].NumberOfCalls, stats.Stats[0].MeanRunTime, len(stats.Stats[0].RunTimes))
 	}
 }
 

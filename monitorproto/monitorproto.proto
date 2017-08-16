@@ -58,6 +58,7 @@ message Stats {
   string name = 2;
   int32 number_of_calls = 3;
   int32 mean_run_time = 4;
+  repeated int32 run_times = 5;
 }
 
 message StatsList {
