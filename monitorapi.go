@@ -116,8 +116,6 @@ func (s *Server) GetStats(ctx context.Context, in *pb.FunctionCall) (*pb.StatsLi
 
 //WriteFunctionCall writes a function call to the monitoring
 func (s *Server) WriteFunctionCall(ctx context.Context, in *pb.FunctionCall) (*pb.Empty, error) {
-	log.Printf("WriteFunctionCall %v", in)
-
 	if in.Time == 0 {
 		log.Printf("REJECTING CALL AS ZERO TIME")
 		return &pb.Empty{}, nil
@@ -125,7 +123,6 @@ func (s *Server) WriteFunctionCall(ctx context.Context, in *pb.FunctionCall) (*p
 
 	var st *pb.Stats
 	for _, sta := range s.stats {
-		log.Printf("Trying: %v -> %v", sta, in)
 		if sta.Binary == in.Binary && sta.Name == in.Name {
 			st = sta
 		}

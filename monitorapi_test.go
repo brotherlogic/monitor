@@ -143,7 +143,7 @@ func TestMonitorAll(t *testing.T) {
 func TestTrimFunctionCalls(t *testing.T) {
 	s := InitTestServer()
 
-	for i := 0; i < 200; i++ {
+	for i := 0; i < 20000; i++ {
 		_, err := s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 340})
 		if err != nil {
 			t.Errorf("Failure to write the function call: %v", err)
@@ -155,7 +155,7 @@ func TestTrimFunctionCalls(t *testing.T) {
 		t.Errorf("Failure to produce stats: %v", err)
 	}
 
-	if stats.Stats[0].NumberOfCalls != 200 || stats.Stats[0].MeanRunTime != 340 || len(stats.Stats[0].RunTimes) != 100 {
+	if stats.Stats[0].NumberOfCalls != 20000 || stats.Stats[0].MeanRunTime != 340 || len(stats.Stats[0].RunTimes) != 10000 {
 		t.Errorf("Stats have come back wrong: %v, %v, %v", stats.Stats[0].NumberOfCalls, stats.Stats[0].MeanRunTime, len(stats.Stats[0].RunTimes))
 	}
 }
