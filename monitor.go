@@ -8,7 +8,7 @@ import (
 
 const (
 	//The number of function call details to keep
-	numCalls = 100
+	numCalls = 10000
 )
 
 // DoRegister Registers this server
