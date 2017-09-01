@@ -23,6 +23,7 @@ type Server struct {
 	logDirectory string
 	write        bool
 	stats        []*pb.Stats
+	logs         []*pb.MessageLog
 }
 
 func (s *Server) getLogPath(name string, identifier string, logType string) (string, int64) {
@@ -37,7 +38,7 @@ func (s *Server) getLogPath(name string, identifier string, logType string) (str
 
 // InitServer creates a monitoring server
 func InitServer() Server {
-	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", false, make([]*pb.Stats, 0)}
+	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", false, make([]*pb.Stats, 0), make([]*pb.MessageLog, 0)}
 	s.Register = s
 	return s
 }
@@ -51,27 +52,20 @@ func (s *Server) ReceiveHeartbeat(ctx context.Context, in *pbr.RegistryEntry) (*
 
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
-	path, timestamp := s.getLogPath(in.Entry.Name, in.Entry.Identifier, "message")
-	in.Timestamps = timestamp
-	data, _ := proto.Marshal(in)
+	in.Timestamps = time.Now().Unix()
 
 	if s.write {
-		ioutil.WriteFile(path, data, 0644)
+		s.logs = append(s.logs, in)
 	}
 
-	return &pb.LogWriteResponse{Success: true, Timestamp: timestamp}, nil
+	return &pb.LogWriteResponse{Success: true, Timestamp: in.Timestamps}, nil
 }
 
 // ReadMessageLogs Reads and returns the message logs for a given entry
 func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*pb.MessageLogReadResponse, error) {
-	path := s.logDirectory + "/" + in.Name + "/" + in.Identifier + "/"
-	files, _ := ioutil.ReadDir(path)
 	response := &pb.MessageLogReadResponse{}
-	for _, file := range files {
-		data, _ := ioutil.ReadFile(path + file.Name())
-		logPb := &pb.MessageLog{}
-		proto.Unmarshal(data, logPb)
-		response.Logs = append(response.Logs, logPb)
+	for _, log := range s.logs {
+		response.Logs = append(response.Logs, log)
 	}
 	return response, nil
 }

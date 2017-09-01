@@ -1,9 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
-	"strconv"
 	"testing"
 	"time"
 
@@ -11,7 +9,6 @@ import (
 
 	pbr "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/monitor/monitorproto"
-	"github.com/golang/protobuf/proto"
 )
 
 func InitTestServer() Server {
@@ -42,22 +39,6 @@ func TestReadMessageLogs(t *testing.T) {
 
 	if logs.Logs[0].Message != "This is the log message" {
 		t.Errorf("Read log the wrong: %v", logs.Logs[0])
-	}
-}
-
-func TestWriteValueLog(t *testing.T) {
-	s := InitTestServer()
-
-	registry := &pbr.RegistryEntry{Identifier: "Blah", Name: "Test"}
-	valueLog := &pb.ValueLog{Entry: registry, Value: 35.5}
-	r, err := s.WriteValueLog(context.Background(), valueLog)
-	if err != nil {
-		t.Errorf("Write Value Log has returned an error")
-	}
-
-	//Check that the log has been written in the required directory
-	if _, err := os.Stat("testlogs/Test/Blah/" + strconv.Itoa(int(r.Timestamp)) + ".value"); os.IsNotExist(err) {
-		t.Errorf("Logs do not exist")
 	}
 }
 
@@ -171,30 +152,6 @@ func TestPullNonFunction(t *testing.T) {
 	stats, err := s.GetStats(context.Background(), &pb.FunctionCall{Binary: "madeupbinary", Name: "RunFunction"})
 	if err == nil {
 		t.Errorf("Stats have come back even though they shouldn't: %v", stats)
-	}
-}
-
-func TestWriteMessageLog(t *testing.T) {
-	s := InitTestServer()
-
-	registry := &pbr.RegistryEntry{Identifier: "Blah", Name: "Test"}
-	messageLog := &pb.MessageLog{Entry: registry, Message: "This is the log message"}
-	r, err := s.WriteMessageLog(context.Background(), messageLog)
-	if err != nil {
-		t.Errorf("Write Value Log has returned an error")
-	}
-
-	//Check that the log has been written in the required directory
-	if _, err := os.Stat("testlogs/Test/Blah/" + strconv.Itoa(int(r.Timestamp)) + ".message"); os.IsNotExist(err) {
-		t.Errorf("Logs do not exist")
-	}
-
-	//Read in the file and check it has a Timestamp
-	messageLogRead := &pb.MessageLog{}
-	data, _ := ioutil.ReadFile("testlogs/Test/Blah/" + strconv.Itoa(int(r.Timestamp)) + ".message")
-	proto.Unmarshal(data, messageLogRead)
-	if messageLogRead.Timestamps == 0 {
-		t.Errorf("Timestamp is wrong: %v", messageLogRead)
 	}
 }
 
