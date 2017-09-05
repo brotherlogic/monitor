@@ -16,6 +16,12 @@ import (
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
+// Issuer issues out problems
+type Issuer interface {
+	createIssue(service, methodCall string, timeMs int32)
+	getSentCount() int
+}
+
 // Server the main server type
 type Server struct {
 	*goserver.GoServer
@@ -24,6 +30,17 @@ type Server struct {
 	write        bool
 	stats        []*pb.Stats
 	logs         []*pb.MessageLog
+	issuer       Issuer
+}
+
+func (s *Server) emailSlowFunction() {
+
+	for _, st := range s.stats {
+		if st.GetMeanRunTime() > 500 {
+			s.issuer.createIssue(st.GetBinary(), st.GetName(), st.GetMeanRunTime())
+			return
+		}
+	}
 }
 
 func (s *Server) getLogPath(name string, identifier string, logType string) (string, int64) {
@@ -38,7 +55,8 @@ func (s *Server) getLogPath(name string, identifier string, logType string) (str
 
 // InitServer creates a monitoring server
 func InitServer() Server {
-	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", false, make([]*pb.Stats, 0), make([]*pb.MessageLog, 0)}
+	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", false, make([]*pb.Stats, 0), make([]*pb.MessageLog, 0), ProdIssuer{}}
+	s.issuer = ProdIssuer{Resolver: s.GetIP}
 	s.Register = s
 	return s
 }

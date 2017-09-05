@@ -11,8 +11,20 @@ import (
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
+type testIssuer struct {
+	count int
+}
+
+func (t *testIssuer) createIssue(service, methodCall string, timeMs int32) {
+	t.count++
+}
+func (t *testIssuer) getSentCount() int {
+	return t.count
+}
+
 func InitTestServer() Server {
 	s := InitServer()
+	s.issuer = &testIssuer{count: 0}
 	s.write = true
 	s.logDirectory = "testlogs"
 	os.RemoveAll(s.logDirectory)
@@ -96,6 +108,19 @@ func TestMonitorFunctionCalls(t *testing.T) {
 
 	if stats.Stats[0].NumberOfCalls != 2 || stats.Stats[0].MeanRunTime != 340 {
 		t.Errorf("Stats have come back wrong: %v", stats)
+	}
+}
+
+func TestEmailFunctionCalls(t *testing.T) {
+	s := InitTestServer()
+	_, err := s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RPCRunFunction", Time: 900})
+	if err != nil {
+		t.Fatalf("Failed to write the function call %v", err)
+	}
+
+	s.emailSlowFunction()
+	if s.issuer.getSentCount() != 1 {
+		t.Errorf("Failed to get the count of sent")
 	}
 }
 
