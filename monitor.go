@@ -21,7 +21,7 @@ func (p ProdIssuer) createIssue(service, methodCall string, timeMs int32) {
 	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 	defer conn.Close()
 	client := pbgh.NewGithubClient(conn)
-	client.AddIssue(context.Background(), &pbgh.Issue{Title: "Fix performance", Body: "Fix " + service + " and " + methodCall})
+	client.AddIssue(context.Background(), &pbgh.Issue{Service: service, Title: "Fix performance", Body: "Fix " + service + " and " + methodCall})
 }
 func (p ProdIssuer) getSentCount() int {
 	return 0
