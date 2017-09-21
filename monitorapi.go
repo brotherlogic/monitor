@@ -34,13 +34,15 @@ type Server struct {
 }
 
 func (s *Server) emailSlowFunction() {
-
+	t := time.Now()
 	for _, st := range s.stats {
 		if st.GetMeanRunTime() > 500 {
 			s.issuer.createIssue(st.GetBinary(), st.GetName(), st.GetMeanRunTime())
+			s.LogFunction("emailSlowFunction-found", t)
 			return
 		}
 	}
+	s.LogFunction("emailSlowFunction-notfound", t)
 }
 
 func (s *Server) getLogPath(name string, identifier string, logType string) (string, int64) {
