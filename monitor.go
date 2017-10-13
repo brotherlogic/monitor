@@ -58,7 +58,6 @@ func main() {
 	s := InitServer()
 	s.PrepServer()
 	s.GoServer.Killme = true
-	s.write = true
 	s.RegisterServer("monitor", true)
 	s.RegisterServingTask(s.emailRunner)
 	s.Serve()

@@ -25,7 +25,6 @@ func (t *testIssuer) getSentCount() int {
 func InitTestServer() Server {
 	s := InitServer()
 	s.issuer = &testIssuer{count: 0}
-	s.write = true
 	s.logDirectory = "testlogs"
 	os.RemoveAll(s.logDirectory)
 	return s
