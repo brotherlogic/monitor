@@ -18,11 +18,16 @@ type ProdIssuer struct {
 
 func (p ProdIssuer) createIssue(service, methodCall string, timeMs int32) {
 	ip, port := p.Resolver("githubcard")
-	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
-	defer conn.Close()
-	client := pbgh.NewGithubClient(conn)
-	client.AddIssue(context.Background(), &pbgh.Issue{Service: service, Title: "Fix performance", Body: "Fix " + service + " and " + methodCall})
+	if port > 0 {
+		conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+		defer conn.Close()
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		client := pbgh.NewGithubClient(conn)
+		client.AddIssue(ctx, &pbgh.Issue{Service: service, Title: "Fix performance", Body: "Fix " + service + " and " + methodCall})
+	}
 }
+
 func (p ProdIssuer) getSentCount() int {
 	return 0
 }

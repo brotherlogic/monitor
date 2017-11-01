@@ -67,6 +67,18 @@ func main() {
 			for _, log := range logs.Logs {
 				fmt.Printf("%v\n", log)
 			}
+		case "write":
+			host, port := findServer("monitor")
+
+			conn, _ := grpc.Dial(host+":"+strconv.Itoa(port), grpc.WithInsecure())
+			defer conn.Close()
+
+			monitor := pb.NewMonitorServiceClient(conn)
+			_, err := monitor.WriteMessageLog(context.Background(), &pb.MessageLog{Message: "Hello"})
+			if err != nil {
+				log.Printf("Error getting logs: %v", err)
+			}
+
 		}
 	}
 }
