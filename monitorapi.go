@@ -118,7 +118,7 @@ func (s *Server) GetStats(ctx context.Context, in *pb.FunctionCall) (*pb.StatsLi
 //WriteFunctionCall writes a function call to the monitoring
 func (s *Server) WriteFunctionCall(ctx context.Context, in *pb.FunctionCall) (*pb.Empty, error) {
 	if in.Time == 0 {
-		log.Printf("REJECTING CALL AS ZERO TIME")
+		log.Printf("REJECTING CALL AS ZERO TIME: %v", in)
 		return &pb.Empty{}, nil
 	}
 
