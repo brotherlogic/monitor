@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 
 	pbgh "github.com/brotherlogic/githubcard/proto"
+	pbgs "github.com/brotherlogic/goserver/proto"
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
@@ -57,6 +58,11 @@ func (s Server) ReportHealth() bool {
 // Mote promotes/demotes this server
 func (s Server) Mote(master bool) error {
 	return nil
+}
+
+// GetState gets the state of the server
+func (s Server) GetState() []*pbgs.State {
+	return []*pbgs.State{}
 }
 
 func main() {

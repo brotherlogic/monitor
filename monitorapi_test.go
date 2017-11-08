@@ -22,7 +22,7 @@ func (t *testIssuer) getSentCount() int {
 	return t.count
 }
 
-func InitTestServer() Server {
+func InitTestServer() *Server {
 	s := InitServer()
 	s.issuer = &testIssuer{count: 0}
 	s.logDirectory = "testlogs"
