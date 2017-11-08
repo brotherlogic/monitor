@@ -23,15 +23,16 @@ type Issuer interface {
 // Server the main server type
 type Server struct {
 	*goserver.GoServer
-	heartbeats   []*pb.Heartbeat
-	logDirectory string
-	stats        []*pb.Stats
-	logs         []*pb.MessageLog
-	issuer       Issuer
+	heartbeats    []*pb.Heartbeat
+	logDirectory  string
+	stats         []*pb.Stats
+	logs          []*pb.MessageLog
+	issuer        Issuer
+	lastSlowCheck time.Time
 }
 
 func (s *Server) emailSlowFunction() {
-
+	s.lastSlowCheck = time.Now()
 	for _, st := range s.stats {
 		if st.GetMeanRunTime() > 500 {
 			s.issuer.createIssue(st.GetBinary(), st.GetName(), st.GetMeanRunTime())
@@ -51,8 +52,8 @@ func (s *Server) getLogPath(name string, identifier string, logType string) (str
 }
 
 // InitServer creates a monitoring server
-func InitServer() Server {
-	s := Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", make([]*pb.Stats, 0), make([]*pb.MessageLog, 0), ProdIssuer{}}
+func InitServer() *Server {
+	s := &Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", make([]*pb.Stats, 0), make([]*pb.MessageLog, 0), ProdIssuer{}, time.Now()}
 	s.issuer = ProdIssuer{Resolver: s.GetIP}
 	s.Register = s
 	return s
