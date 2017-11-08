@@ -41,7 +41,7 @@ const (
 func (s Server) emailRunner() {
 	for true {
 		s.emailSlowFunction()
-		time.Sleep(time.Hour * 24)
+		time.Sleep(time.Minute * 5)
 	}
 }
 
