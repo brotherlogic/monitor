@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"strconv"
 	"time"
 
@@ -38,7 +39,7 @@ const (
 	numCalls = 10000
 )
 
-func (s Server) emailRunner() {
+func (s *Server) emailRunner() {
 	for true {
 		s.emailSlowFunction()
 		time.Sleep(time.Minute * 5)
@@ -62,7 +63,8 @@ func (s Server) Mote(master bool) error {
 
 // GetState gets the state of the server
 func (s Server) GetState() []*pbgs.State {
-	return []*pbgs.State{&pbgs.State{Key: "last_slow", TimeValue: s.lastSlowCheck.Unix()}}
+	log.Printf("HERE = %v", s.LastSlowCheck)
+	return []*pbgs.State{&pbgs.State{Key: "last_slow", TimeValue: s.LastSlowCheck.Unix()}}
 }
 
 func main() {

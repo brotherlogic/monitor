@@ -28,12 +28,13 @@ type Server struct {
 	stats         []*pb.Stats
 	logs          []*pb.MessageLog
 	issuer        Issuer
-	lastSlowCheck time.Time
+	LastSlowCheck time.Time
 }
 
 func (s *Server) emailSlowFunction() {
-	log.Printf("RUNNING SLOW CHECK")
-	s.lastSlowCheck = time.Now()
+	log.Printf("RUNNING SLOW CHECK: %v", s.LastSlowCheck)
+	s.LastSlowCheck = time.Now()
+	log.Printf("RESET   SLOW CHECK: %v", s.LastSlowCheck)
 	for _, st := range s.stats {
 		if st.GetMeanRunTime() > 500 {
 			s.issuer.createIssue(st.GetBinary(), st.GetName(), st.GetMeanRunTime())
