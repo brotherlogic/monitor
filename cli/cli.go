@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -22,7 +23,9 @@ func findServer(name string) (string, int) {
 	defer conn.Close()
 
 	registry := pbdi.NewDiscoveryServiceClient(conn)
-	r, err := registry.Discover(context.Background(), &pbdi.RegistryEntry{Name: "monitor"})
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := registry.Discover(ctx, &pbdi.RegistryEntry{Name: "monitor"})
 
 	if err != nil {
 		log.Fatalf("Failure to list: %v", err)
