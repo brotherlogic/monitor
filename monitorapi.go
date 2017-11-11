@@ -36,7 +36,6 @@ func (s *Server) emailSlowFunction() {
 	log.Printf("RUNNING SLOW CHECK: %v", s.LastSlowCheck)
 	s.LastSlowCheck = time.Now()
 	log.Printf("RESET   SLOW CHECK: %v", s.LastSlowCheck)
-	s.Log(fmt.Sprintf("Issues added: %v", len(s.stats)))
 	for _, st := range s.stats {
 		if st.GetMeanRunTime() > 500 {
 			s.WriteMessageLog(context.Background(), &pb.MessageLog{Entry: s.Registry, Message: fmt.Sprintf("Creating issue: %v, %v, %v", st.GetBinary(), st.GetName(), st.GetMeanRunTime())})

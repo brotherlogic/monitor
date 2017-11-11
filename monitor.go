@@ -47,8 +47,8 @@ func (s *Server) emailRunner() {
 }
 
 // DoRegister Registers this server
-func (s Server) DoRegister(server *grpc.Server) {
-	pb.RegisterMonitorServiceServer(server, &s)
+func (s *Server) DoRegister(server *grpc.Server) {
+	pb.RegisterMonitorServiceServer(server, s)
 }
 
 // ReportHealth alerts if we're not healthy
