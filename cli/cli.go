@@ -78,7 +78,6 @@ func main() {
 			if err != nil {
 				log.Printf("Error getting logs: %v", err)
 			}
-
 		}
 	}
 }
