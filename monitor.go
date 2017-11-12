@@ -71,7 +71,8 @@ func main() {
 	s := InitServer()
 	s.PrepServer()
 	s.GoServer.Killme = true
-	s.RegisterServer("monitor", true)
-	s.RegisterServingTask(s.emailRunner)
-	s.Serve()
+	if s.RegisterServer("monitor", true) {
+		s.RegisterServingTask(s.emailRunner)
+		s.Serve()
+	}
 }
