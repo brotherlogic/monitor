@@ -3,9 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
-	"os"
-	"strconv"
 	"time"
 
 	"github.com/brotherlogic/goserver"
@@ -33,9 +30,7 @@ type Server struct {
 }
 
 func (s *Server) emailSlowFunction() {
-	log.Printf("RUNNING SLOW CHECK: %v", s.LastSlowCheck)
 	s.LastSlowCheck = time.Now()
-	log.Printf("RESET   SLOW CHECK: %v", s.LastSlowCheck)
 	for _, st := range s.stats {
 		if st.GetMeanRunTime() > 500 {
 			s.WriteMessageLog(context.Background(), &pb.MessageLog{Entry: s.Registry, Message: fmt.Sprintf("Creating issue: %v, %v, %v", st.GetBinary(), st.GetName(), st.GetMeanRunTime())})
@@ -43,16 +38,6 @@ func (s *Server) emailSlowFunction() {
 			return
 		}
 	}
-}
-
-func (s *Server) getLogPath(name string, identifier string, logType string) (string, int64) {
-	path := s.logDirectory + "/" + name + "/" + identifier + "/"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		os.MkdirAll(path, 0777)
-	}
-
-	timestamp := time.Now().Unix()
-	return path + strconv.Itoa(int(timestamp)) + "." + logType, timestamp
 }
 
 // InitServer creates a monitoring server
@@ -84,13 +69,6 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 		response.Logs = append(response.Logs, log)
 	}
 	return response, nil
-}
-
-// WriteValueLog Writes out a value log
-func (s *Server) WriteValueLog(ctx context.Context, in *pb.ValueLog) (*pb.LogWriteResponse, error) {
-	_, timestamp := s.getLogPath(in.Entry.Name, in.Entry.Identifier, "value")
-	//data, _ := proto.Marshal(in)
-	return &pb.LogWriteResponse{Success: true, Timestamp: timestamp}, nil
 }
 
 func recompute(st *pb.Stats) {
@@ -155,7 +133,6 @@ func (s *Server) GetHeartbeats(ctx context.Context, in *pb.Empty) (*pb.Heartbeat
 	mapper = make(map[string]*pb.Heartbeat)
 
 	for _, heartbeat := range s.heartbeats {
-		log.Printf("BEAT: %v", heartbeat)
 		name := heartbeat.Entry.Identifier + "/" + heartbeat.Entry.Name
 		if _, ok := mapper[name]; ok {
 			if heartbeat.BeatTime > mapper[name].BeatTime {
