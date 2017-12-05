@@ -1,11 +1,10 @@
 package main
 
 import (
-	"context"
-	"log"
 	"strconv"
 	"time"
 
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	pbgh "github.com/brotherlogic/githubcard/proto"
@@ -46,6 +45,11 @@ func (s *Server) emailRunner() {
 	}
 }
 
+// WriteValueLog Writes out a value log
+func (s *Server) WriteValueLog(ctx context.Context, in *pb.ValueLog) (*pb.LogWriteResponse, error) {
+	return &pb.LogWriteResponse{Success: false}, nil
+}
+
 // DoRegister Registers this server
 func (s *Server) DoRegister(server *grpc.Server) {
 	pb.RegisterMonitorServiceServer(server, s)
@@ -63,7 +67,6 @@ func (s Server) Mote(master bool) error {
 
 // GetState gets the state of the server
 func (s Server) GetState() []*pbgs.State {
-	log.Printf("HERE = %v", s.LastSlowCheck)
 	return []*pbgs.State{&pbgs.State{Key: "last_slow", TimeValue: s.LastSlowCheck.Unix()}}
 }
 

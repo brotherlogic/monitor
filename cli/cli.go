@@ -23,7 +23,7 @@ func findServer(name string) (string, int) {
 	defer conn.Close()
 
 	registry := pbdi.NewDiscoveryServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	r, err := registry.Discover(ctx, &pbdi.RegistryEntry{Name: "monitor"})
 
@@ -43,15 +43,13 @@ func main() {
 		case "list":
 			host, port := findServer("monitor")
 
-			log.Printf("Here %v,%v", host, port)
-
 			conn, _ := grpc.Dial(host+":"+strconv.Itoa(port), grpc.WithInsecure())
 			defer conn.Close()
 
 			monitor := pb.NewMonitorServiceClient(conn)
 			stats, err := monitor.GetStats(context.Background(), &pb.FunctionCall{})
 			if err != nil {
-				log.Printf("Error getting stats: %v", err)
+				log.Fatalf("Error getting stats: %v", err)
 			}
 			for _, stat := range stats.Stats {
 				fmt.Printf("Stats: %v -> %v (%v)\n", stat.Binary+"-"+stat.Name, stat.MeanRunTime, stat.NumberOfCalls)
@@ -65,7 +63,7 @@ func main() {
 			monitor := pb.NewMonitorServiceClient(conn)
 			logs, err := monitor.ReadMessageLogs(context.Background(), &pbdi.RegistryEntry{})
 			if err != nil {
-				log.Printf("Error getting logs: %v", err)
+				log.Fatalf("Error getting logs: %v", err)
 			}
 			for _, log := range logs.Logs {
 				fmt.Printf("%v\n", log)
@@ -79,7 +77,7 @@ func main() {
 			monitor := pb.NewMonitorServiceClient(conn)
 			_, err := monitor.WriteMessageLog(context.Background(), &pb.MessageLog{Message: "Hello"})
 			if err != nil {
-				log.Printf("Error getting logs: %v", err)
+				log.Fatalf("Error getting logs: %v", err)
 			}
 		}
 	}
