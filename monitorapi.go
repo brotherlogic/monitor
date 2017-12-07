@@ -59,6 +59,11 @@ func (s *Server) ReceiveHeartbeat(ctx context.Context, in *pbr.RegistryEntry) (*
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
 	in.Timestamps = time.Now().Unix()
 	s.logs = append(s.logs, in)
+
+	if len(s.logs) > 500 {
+		s.logs = s.logs[:500]
+	}
+
 	return &pb.LogWriteResponse{Success: true, Timestamp: in.Timestamps}, nil
 }
 
