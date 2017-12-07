@@ -165,6 +165,26 @@ func TestTrimFunctionCalls(t *testing.T) {
 	}
 }
 
+func TestTrimLogs(t *testing.T) {
+	s := InitTestServer()
+
+	for i := 0; i < 20000; i++ {
+		_, err := s.WriteMessageLog(context.Background(), &pb.MessageLog{Message: "Hello there"})
+		if err != nil {
+			t.Errorf("Failure to write the function call: %v", err)
+		}
+	}
+
+	stats, err := s.ReadMessageLogs(context.Background(), &pbr.RegistryEntry{})
+	if err != nil {
+		t.Errorf("Failure to produce stats: %v", err)
+	}
+
+	if len(stats.GetLogs()) != 500 {
+		t.Errorf("Too many logs: %v", len(stats.GetLogs()))
+	}
+}
+
 func TestPullNonFunction(t *testing.T) {
 	s := InitTestServer()
 
