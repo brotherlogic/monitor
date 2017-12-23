@@ -13,6 +13,9 @@ import (
 	pbdi "github.com/brotherlogic/discovery/proto"
 	"github.com/brotherlogic/goserver/utils"
 	pb "github.com/brotherlogic/monitor/monitorproto"
+
+	//Needed to pull in gzip encoding init
+	_ "google.golang.org/grpc/encoding/gzip"
 )
 
 func findServer(name string) (string, int) {

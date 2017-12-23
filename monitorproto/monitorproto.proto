@@ -76,4 +76,6 @@ service MonitorService {
 
         rpc WriteFunctionCall (FunctionCall) returns (Empty) {}
         rpc GetStats(FunctionCall) returns (StatsList) {}
+
+        rpc ClearStats(Empty) returns (Empty) {}
 }
