@@ -82,6 +82,17 @@ func main() {
 			if err != nil {
 				log.Fatalf("Error getting logs: %v", err)
 			}
+		case "clear":
+			host, port := findServer("monitor")
+
+			conn, _ := grpc.Dial(host+":"+strconv.Itoa(port), grpc.WithInsecure())
+			defer conn.Close()
+
+			monitor := pb.NewMonitorServiceClient(conn)
+			_, err := monitor.ClearStats(context.Background(), &pb.Empty{})
+			if err != nil {
+				log.Fatalf("Error getting logs: %v", err)
+			}
 		}
 	}
 }
