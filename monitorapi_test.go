@@ -53,6 +53,20 @@ func TestReadMessageLogs(t *testing.T) {
 	}
 }
 
+func TestClearStats(t *testing.T) {
+	s := InitTestServer()
+	s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction", Time: 10})
+	stats, _ := s.GetStats(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction"})
+	if len(stats.GetStats()) == 0 {
+		t.Fatalf("Stats not added!: %v", t)
+	}
+	s.ClearStats(context.Background(), &pb.Empty{})
+	stats, _ = s.GetStats(context.Background(), &pb.FunctionCall{Binary: "madeup", Name: "RunFunction"})
+	if len(stats.GetStats()) != 0 {
+		t.Fatalf("Stats not cleared!: %v", t)
+	}
+}
+
 func TestComputingMeanOnFunctionCalls(t *testing.T) {
 	s := InitTestServer()
 

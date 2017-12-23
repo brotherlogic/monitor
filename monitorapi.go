@@ -29,6 +29,12 @@ type Server struct {
 	LastSlowCheck time.Time
 }
 
+//ClearStats clears out the stats
+func (s *Server) ClearStats(ctx context.Context, in *pb.Empty) (*pb.Empty, error) {
+	s.stats = make([]*pb.Stats, 0)
+	return &pb.Empty{}, nil
+}
+
 func (s *Server) emailSlowFunction() {
 	s.LastSlowCheck = time.Now()
 	for _, st := range s.stats {
