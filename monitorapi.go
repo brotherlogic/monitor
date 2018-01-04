@@ -68,7 +68,7 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 
 	//Keep the # of logs fixed to 500
 	if len(s.logs) > 500 {
-		s.logs = s.logs[:500]
+		s.logs = s.logs[len(s.logs)-500:]
 	}
 
 	return &pb.LogWriteResponse{Success: true, Timestamp: in.Timestamps}, nil
