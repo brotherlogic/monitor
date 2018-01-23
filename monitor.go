@@ -77,6 +77,9 @@ func main() {
 	s.GoServer.Killme = true
 	if s.RegisterServer("monitor", true) {
 		s.RegisterServingTask(s.emailRunner)
-		s.Serve()
+		err := s.Serve()
+		if err != nil {
+			fmt.Printf("Error serving: %v", err)
+		}
 	}
 }
