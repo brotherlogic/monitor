@@ -76,9 +76,11 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 
 // ReadMessageLogs Reads and returns the message logs for a given entry
 func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*pb.MessageLogReadResponse, error) {
-	response := &pb.MessageLogReadResponse{}
+	response := &pb.MessageLogReadResponse{Logs: make([]*pb.MessageLog, 0)}
 	for _, log := range s.logs {
-		response.Logs = append(response.Logs, log)
+		if log != nil {
+			response.Logs = append(response.Logs, log)
+		}
 	}
 	return response, nil
 }
