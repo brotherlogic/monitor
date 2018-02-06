@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/brotherlogic/goserver"
@@ -27,6 +28,7 @@ type Server struct {
 	logs          []*pb.MessageLog
 	issuer        Issuer
 	LastSlowCheck time.Time
+	RunTimeLock   *sync.Mutex
 }
 
 //ClearStats clears out the stats
@@ -48,7 +50,7 @@ func (s *Server) emailSlowFunction() {
 
 // InitServer creates a monitoring server
 func InitServer() *Server {
-	s := &Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", make([]*pb.Stats, 0), make([]*pb.MessageLog, 0), ProdIssuer{}, time.Now()}
+	s := &Server{&goserver.GoServer{}, make([]*pb.Heartbeat, 0), "logs", make([]*pb.Stats, 0), make([]*pb.MessageLog, 0), ProdIssuer{}, time.Now(), &sync.Mutex{}}
 	s.issuer = ProdIssuer{Resolver: s.GetIP}
 	s.Register = s
 	return s
@@ -129,6 +131,7 @@ func (s *Server) WriteFunctionCall(ctx context.Context, in *pb.FunctionCall) (*p
 		st = &pb.Stats{Name: in.Name, Binary: in.Binary, NumberOfCalls: 1, MeanRunTime: in.Time, RunTimes: []int32{in.Time}}
 		s.stats = append(s.stats, st)
 	} else {
+		s.RunTimeLock.Lock()
 		st.NumberOfCalls++
 		st.MeanRunTime = (st.MeanRunTime*(st.NumberOfCalls-1))/st.NumberOfCalls + in.Time/st.NumberOfCalls
 		st.RunTimes = append(st.RunTimes, in.Time)
@@ -136,6 +139,7 @@ func (s *Server) WriteFunctionCall(ctx context.Context, in *pb.FunctionCall) (*p
 		if len(st.RunTimes) > numCalls {
 			st.RunTimes = st.RunTimes[len(st.RunTimes)-numCalls : len(st.RunTimes)-1]
 		}
+		s.RunTimeLock.Unlock()
 	}
 
 	return &pb.Empty{}, nil
