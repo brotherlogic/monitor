@@ -19,22 +19,8 @@ import (
 )
 
 func findServer(name string) (string, int) {
-	conn, err := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Cannot reach discover server: %v (trying to discover %v)", err, name)
-	}
-	defer conn.Close()
-
-	registry := pbdi.NewDiscoveryServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-	r, err := registry.Discover(ctx, &pbdi.RegistryEntry{Name: "monitor"})
-
-	if err != nil {
-		log.Fatalf("Failure to list: %v", err)
-	}
-
-	return r.Ip, int(r.Port)
+	ip, port, _ := utils.Resolve(name)
+	return ip, int(port)
 }
 
 func main() {
