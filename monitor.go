@@ -18,7 +18,7 @@ type ProdIssuer struct {
 	Resolver func(string) (string, int)
 }
 
-func (p ProdIssuer) createIssue(service, methodCall string, timeMs int32) {
+func (p ProdIssuer) createIssue(service, methodCall string, timeMs int32, otherCalls string) {
 	ip, port := p.Resolver("githubcard")
 	if port > 0 {
 		conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
@@ -26,7 +26,7 @@ func (p ProdIssuer) createIssue(service, methodCall string, timeMs int32) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		client := pbgh.NewGithubClient(conn)
-		client.AddIssue(ctx, &pbgh.Issue{Service: service, Title: "Fix performance", Body: fmt.Sprintf("Fix %v and %v -> %v", service, methodCall, timeMs)})
+		client.AddIssue(ctx, &pbgh.Issue{Service: service, Title: "Fix performance", Body: fmt.Sprintf("Fix %v and %v -> %v given %v", service, methodCall, timeMs, otherCalls)})
 	}
 }
 

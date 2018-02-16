@@ -15,7 +15,7 @@ type testIssuer struct {
 	count int
 }
 
-func (t *testIssuer) createIssue(service, methodCall string, timeMs int32) {
+func (t *testIssuer) createIssue(service, methodCall string, timeMs int32, other string) {
 	t.count++
 }
 func (t *testIssuer) getSentCount() int {
