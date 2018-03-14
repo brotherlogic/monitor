@@ -127,7 +127,7 @@ func (s *Server) WriteFunctionCall(ctx context.Context, in *pb.FunctionCall) (*p
 	}
 
 	if st == nil {
-		st = &pb.Stats{Name: in.Name, Binary: in.Binary, NumberOfCalls: 1, MeanRunTime: in.Time, RunTimes: []int32{in.Time}}
+		st = &pb.Stats{Name: in.Name, Binary: in.Binary, NumberOfCalls: 1, MeanRunTime: in.Time, RunTimes: []int32{in.Time}, Slowest: in}
 		s.stats = append(s.stats, st)
 	} else {
 		s.RunTimeLock.Lock()
@@ -138,6 +138,11 @@ func (s *Server) WriteFunctionCall(ctx context.Context, in *pb.FunctionCall) (*p
 		if len(st.RunTimes) > numCalls {
 			st.RunTimes = st.RunTimes[len(st.RunTimes)-numCalls : len(st.RunTimes)-1]
 		}
+
+		if in.Time > st.Slowest.Time {
+			st.Slowest = in
+		}
+
 		s.RunTimeLock.Unlock()
 	}
 
