@@ -42,6 +42,9 @@ func main() {
 			}
 			for _, stat := range stats.Stats {
 				fmt.Printf("Stats: %v -> %v (%v)\n", stat.Binary+"-"+stat.Name, stat.MeanRunTime, stat.NumberOfCalls)
+				for _, milestone := range stat.Slowest.Milestones {
+					fmt.Printf("  Milestone %v -> %v\n", milestone.Name, milestone.Time)
+				}
 			}
 		case "logs":
 			host, port := findServer("monitor")
