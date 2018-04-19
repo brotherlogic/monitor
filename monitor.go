@@ -46,11 +46,6 @@ func (s *Server) emailRunner() {
 	}
 }
 
-// WriteValueLog Writes out a value log
-func (s *Server) WriteValueLog(ctx context.Context, in *pb.ValueLog) (*pb.LogWriteResponse, error) {
-	return &pb.LogWriteResponse{Success: false}, nil
-}
-
 // DoRegister Registers this server
 func (s *Server) DoRegister(server *grpc.Server) {
 	pb.RegisterMonitorServiceServer(server, s)
