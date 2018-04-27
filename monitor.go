@@ -70,7 +70,7 @@ func main() {
 	s := InitServer()
 	s.PrepServer()
 	s.GoServer.Killme = true
-	if s.RegisterServer("monitor", true) {
+	if s.RegisterServer("monitor", false) {
 		s.RegisterServingTask(s.emailRunner)
 		err := s.Serve()
 		if err != nil {
