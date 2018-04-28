@@ -79,7 +79,7 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*pb.MessageLogReadResponse, error) {
 	response := &pb.MessageLogReadResponse{Logs: make([]*pb.MessageLog, 0)}
 	for _, log := range s.logs {
-		if log != nil {
+		if log != nil && log.Entry.Name == in.Name {
 			response.Logs = append(response.Logs, log)
 		}
 	}
