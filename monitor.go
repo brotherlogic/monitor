@@ -39,7 +39,7 @@ const (
 	numCalls = 10000
 )
 
-func (s *Server) emailRunner() {
+func (s *Server) emailRunner(ctx context.Context) {
 	for true {
 		s.emailSlowFunction()
 		time.Sleep(time.Hour)

@@ -53,7 +53,7 @@ func main() {
 			defer conn.Close()
 
 			monitor := pb.NewMonitorServiceClient(conn)
-			logs, err := monitor.ReadMessageLogs(context.Background(), &pbdi.RegistryEntry{})
+			logs, err := monitor.ReadMessageLogs(context.Background(), &pbdi.RegistryEntry{Name: os.Args[2]})
 			if err != nil {
 				log.Fatalf("Error getting logs: %v", err)
 			}
