@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
@@ -65,7 +64,6 @@ func InitServer() *Server {
 
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
-	log.Fatalf("Receiving: %v", in)
 	in.Timestamps = time.Now().Unix()
 	s.logs = append(s.logs, in)
 
