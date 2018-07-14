@@ -40,8 +40,6 @@ func (s *Server) emailSlowFunction() {
 	s.LastSlowCheck = time.Now()
 	for _, st := range s.stats {
 		if st.GetMeanRunTime() > 500 {
-			s.WriteMessageLog(context.Background(), &pb.MessageLog{Entry: s.Registry, Message: fmt.Sprintf("Creating issue: %v, %v, %v", st.GetBinary(), st.GetName(), st.GetMeanRunTime())})
-
 			//Build up a super string
 			super := ""
 			for _, sti := range s.stats {
