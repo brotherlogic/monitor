@@ -14,7 +14,7 @@ type testIssuer struct {
 	count int
 }
 
-func (t *testIssuer) createIssue(service, methodCall string, timeMs int32, other string) {
+func (t *testIssuer) createIssue(ctx context.Context, service, methodCall string, timeMs int32, other string) {
 	t.count++
 }
 func (t *testIssuer) getSentCount() int {
@@ -57,11 +57,11 @@ func TestReadMessageLotsOfLogs(t *testing.T) {
 
 	registry := &pbr.RegistryEntry{Identifier: "Blah", Name: "Test"}
 	messageLog := &pb.MessageLog{Entry: registry, Message: "This is the log message"}
-	for i := 0 ; i < 1000 ; i++ {
-	_, err := s.WriteMessageLog(context.Background(), messageLog)
-	if err != nil {
-		t.Errorf("Write Value Log has returned an error")
-	}
+	for i := 0; i < 1000; i++ {
+		_, err := s.WriteMessageLog(context.Background(), messageLog)
+		if err != nil {
+			t.Errorf("Write Value Log has returned an error")
+		}
 	}
 
 	logs, err := s.ReadMessageLogs(context.Background(), registry)
@@ -76,7 +76,6 @@ func TestReadMessageLotsOfLogs(t *testing.T) {
 		t.Errorf("Read log the wrong: %v", logs.Logs[0])
 	}
 }
-
 
 func TestClearStats(t *testing.T) {
 	s := InitTestServer()
@@ -156,7 +155,7 @@ func TestEmailFunctionCalls(t *testing.T) {
 		t.Fatalf("Failed to write the function call %v", err)
 	}
 
-	s.emailSlowFunction()
+	s.emailSlowFunction(context.Background())
 	if s.issuer.getSentCount() != 1 {
 		t.Errorf("Failed to get the count of sent")
 	}
