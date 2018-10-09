@@ -15,7 +15,7 @@ import (
 
 // Issuer issues out problems
 type Issuer interface {
-	createIssue(service, methodCall string, timeMs int32, otherCalls string)
+	createIssue(ctx context.Context, service, methodCall string, timeMs int32, otherCalls string)
 	getSentCount() int
 }
 
@@ -28,6 +28,8 @@ type Server struct {
 	issuer        Issuer
 	LastSlowCheck time.Time
 	RunTimeLock   *sync.Mutex
+	reads         int
+	writes        int
 }
 
 //ClearStats clears out the stats
@@ -36,7 +38,7 @@ func (s *Server) ClearStats(ctx context.Context, in *pb.Empty) (*pb.Empty, error
 	return &pb.Empty{}, nil
 }
 
-func (s *Server) emailSlowFunction() {
+func (s *Server) emailSlowFunction(ctx context.Context) {
 	s.LastSlowCheck = time.Now()
 	for _, st := range s.stats {
 		if st.GetMeanRunTime() > 500 {
@@ -46,22 +48,15 @@ func (s *Server) emailSlowFunction() {
 				super += fmt.Sprintf("Also %v/%v -> %v\n", sti.GetBinary(), sti.GetName(), sti.GetMeanRunTime())
 			}
 
-			s.issuer.createIssue(st.GetBinary(), st.GetName(), st.GetMeanRunTime(), super)
+			s.issuer.createIssue(ctx, st.GetBinary(), st.GetName(), st.GetMeanRunTime(), super)
 			return
 		}
 	}
 }
 
-// InitServer creates a monitoring server
-func InitServer() *Server {
-	s := &Server{&goserver.GoServer{}, "logs", make([]*pb.Stats, 0), make([]*pb.MessageLog, 0), ProdIssuer{}, time.Now(), &sync.Mutex{}}
-	s.issuer = ProdIssuer{Resolver: s.GetIP}
-	s.Register = s
-	return s
-}
-
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
+	s.writes++
 	in.Timestamps = time.Now().Unix()
 	s.logs = append(s.logs, in)
 
@@ -75,6 +70,7 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 
 // ReadMessageLogs Reads and returns the message logs for a given entry
 func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*pb.MessageLogReadResponse, error) {
+	s.reads++
 	response := &pb.MessageLogReadResponse{Logs: make([]*pb.MessageLog, 0)}
 	for _, log := range s.logs {
 		if log != nil && log.Entry != nil && (log.Entry.Name == in.GetName() || in.GetName() == "") {
