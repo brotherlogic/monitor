@@ -2,49 +2,32 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"sync"
 	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	pbgh "github.com/brotherlogic/githubcard/proto"
 	"github.com/brotherlogic/goserver"
 	pbgs "github.com/brotherlogic/goserver/proto"
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
-// ProdIssuer the issuer to use in prod
-type ProdIssuer struct {
-	Resolver func(string) (string, int)
-}
-
-func (p ProdIssuer) createIssue(ctx context.Context, service, methodCall string, timeMs int32, otherCalls string) {
-	ip, port := p.Resolver("githubcard")
-	if port > 0 {
-		conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
-		defer conn.Close()
-		client := pbgh.NewGithubClient(conn)
-		client.AddIssue(ctx, &pbgh.Issue{Service: service, Title: "Fix performance", Body: fmt.Sprintf("Fix %v and %v -> %v given %v", service, methodCall, timeMs, otherCalls)})
-	}
-}
-
-func (p ProdIssuer) getSentCount() int {
-	return 0
+// Server the main server type
+type Server struct {
+	*goserver.GoServer
+	logDirectory  string
+	logs          []*pb.MessageLog
+	LastSlowCheck time.Time
+	RunTimeLock   *sync.Mutex
+	reads         int
+	writes        int
 }
 
 const (
 	//The number of function call details to keep
 	numCalls = 10000
 )
-
-func (s *Server) emailRunner(ctx context.Context) {
-	for true {
-		s.emailSlowFunction(ctx)
-		time.Sleep(time.Hour)
-	}
-}
 
 // DoRegister Registers this server
 func (s *Server) DoRegister(server *grpc.Server) {
@@ -75,15 +58,12 @@ func InitServer() *Server {
 	s := &Server{
 		&goserver.GoServer{},
 		"logs",
-		make([]*pb.Stats, 0),
 		make([]*pb.MessageLog, 0),
-		ProdIssuer{},
 		time.Now(),
 		&sync.Mutex{},
 		0,
 		0,
 	}
-	s.issuer = ProdIssuer{Resolver: s.GetIP}
 	s.Register = s
 	return s
 }
@@ -93,7 +73,6 @@ func main() {
 	s.PrepServer()
 	s.GoServer.Killme = true
 	if s.RegisterServer("monitor", false) {
-		s.RegisterServingTask(s.emailRunner)
 		err := s.Serve()
 		if err != nil {
 			fmt.Printf("Error serving: %v", err)

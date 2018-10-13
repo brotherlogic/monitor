@@ -30,38 +30,8 @@ message MessageLogReadResponse {
   repeated MessageLog logs = 1;
 }
 
-message Milestone {
-  string name = 1;
-  int32 time = 2;
-}
-
-message FunctionCall {
-  string binary = 1;
-  string name = 2;
-  int32 time = 3;
-  repeated Milestone milestones = 4;
-}
-
-message Stats {
-  string binary = 1;
-  string name = 2;
-  int32 number_of_calls = 3;
-  int32 mean_run_time = 4;
-  repeated int32 run_times = 5;
-  FunctionCall slowest = 6;
-}
-
-message StatsList {
-  repeated Stats stats = 1;
-}
 
 service MonitorService {
         rpc WriteMessageLog(MessageLog) returns (LogWriteResponse) {}
-
         rpc ReadMessageLogs (discovery.RegistryEntry) returns (MessageLogReadResponse) {}
-
-        rpc WriteFunctionCall (FunctionCall) returns (Empty) {}
-        rpc GetStats(FunctionCall) returns (StatsList) {}
-
-        rpc ClearStats(Empty) returns (Empty) {}
 }

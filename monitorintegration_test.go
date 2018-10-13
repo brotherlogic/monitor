@@ -26,6 +26,5 @@ func TestMemoryUsage(t *testing.T) {
 	for i := 0; i < 100000; i++ {
 		strfuzz := randStringBytes(10)
 		s.WriteMessageLog(context.Background(), &pb.MessageLog{Entry: &pbd.RegistryEntry{Identifier: "Blah" + strfuzz, Name: "Test" + strfuzz}})
-		s.WriteFunctionCall(context.Background(), &pb.FunctionCall{Binary: "madeup" + strfuzz, Name: "whee" + strfuzz, Time: 10})
 	}
 }
