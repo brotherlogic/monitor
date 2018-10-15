@@ -12,6 +12,7 @@ import (
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
 	s.writes++
+	s.writeMap[in.Entry.Name]++
 	in.Timestamps = time.Now().Unix()
 	s.logs = append(s.logs, in)
 

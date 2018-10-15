@@ -22,6 +22,7 @@ type Server struct {
 	RunTimeLock   *sync.Mutex
 	reads         int
 	writes        int
+	writeMap      map[string]int
 }
 
 const (
@@ -50,6 +51,7 @@ func (s Server) GetState() []*pbgs.State {
 		&pbgs.State{Key: "last_slow", TimeValue: s.LastSlowCheck.Unix()},
 		&pbgs.State{Key: "reads", Value: int64(s.reads)},
 		&pbgs.State{Key: "writes", Value: int64(s.writes)},
+		&pbgs.State{Key: "write_map", Text: fmt.Sprintf("%v", s.writeMap)},
 	}
 }
 
@@ -63,6 +65,7 @@ func InitServer() *Server {
 		&sync.Mutex{},
 		0,
 		0,
+		make(map[string]int),
 	}
 	s.Register = s
 	return s
