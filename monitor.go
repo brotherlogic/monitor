@@ -23,6 +23,7 @@ type Server struct {
 	reads         int
 	writes        int
 	writeMap      map[string]int
+	writeMutex    *sync.Mutex
 }
 
 const (
@@ -66,6 +67,7 @@ func InitServer() *Server {
 		0,
 		0,
 		make(map[string]int),
+		&sync.Mutex{},
 	}
 	s.Register = s
 	return s
