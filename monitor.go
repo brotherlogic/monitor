@@ -48,6 +48,8 @@ func (s Server) Mote(ctx context.Context, master bool) error {
 
 // GetState gets the state of the server
 func (s Server) GetState() []*pbgs.State {
+	s.writeMutex.Lock()
+	defer s.writeMutex.Unlock()
 	return []*pbgs.State{
 		&pbgs.State{Key: "last_slow", TimeValue: s.LastSlowCheck.Unix()},
 		&pbgs.State{Key: "reads", Value: int64(s.reads)},
