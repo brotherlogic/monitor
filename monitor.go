@@ -51,7 +51,7 @@ func (s Server) GetState() []*pbgs.State {
 	s.writeMutex.Lock()
 	defer s.writeMutex.Unlock()
 	return []*pbgs.State{
-		&pbgs.State{Key: "last_slow", TimeValue: s.LastSlowCheck.Unix()},
+		&pbgs.State{Key: "logs", Value: int64(len(s.logs))},
 		&pbgs.State{Key: "reads", Value: int64(s.reads)},
 		&pbgs.State{Key: "writes", Value: int64(s.writes)},
 		&pbgs.State{Key: "write_map", Text: fmt.Sprintf("%v", s.writeMap)},
