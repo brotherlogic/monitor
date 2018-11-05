@@ -26,7 +26,7 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 	s.reads++
 	response := &pb.MessageLogReadResponse{Logs: make([]*pb.MessageLog, 0)}
 	for _, log := range s.logs {
-		if log != nil && log.Entry != nil && (log.Entry.Name == in.GetName() || in.GetName() == "") {
+		if log != nil && log.Entry != nil && (log.Entry.Name == in.GetName() || in.GetName() == "") && len(response.Logs) < 500 {
 			response.Logs = append(response.Logs, log)
 		}
 	}
