@@ -33,10 +33,11 @@ func main() {
 	} else {
 		switch os.Args[1] {
 		case "logs":
+			utils.SendTrace(ctx, "monitorcli-"+os.Args[1]+"-prefind", time.Now(), pbt.Milestone_MARKER, "monitor")
 			host, port := findServer("monitor")
-
 			conn, _ := grpc.Dial(host+":"+strconv.Itoa(port), grpc.WithInsecure())
 			defer conn.Close()
+			utils.SendTrace(ctx, "monitorcli-"+os.Args[1]+"-postfind", time.Now(), pbt.Milestone_MARKER, "monitor")
 
 			monitor := pb.NewMonitorServiceClient(conn)
 			utils.SendTrace(ctx, "monitorcli-"+os.Args[1]+"-preread", time.Now(), pbt.Milestone_MARKER, "monitor")
