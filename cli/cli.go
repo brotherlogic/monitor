@@ -39,8 +39,9 @@ func main() {
 			defer conn.Close()
 
 			monitor := pb.NewMonitorServiceClient(conn)
-			utils.SendTrace(ctx, "monitorcli-"+os.Args[1], time.Now(), pbt.Milestone_MARKER, "monitor")
+			utils.SendTrace(ctx, "monitorcli-"+os.Args[1]+"-preread", time.Now(), pbt.Milestone_MARKER, "monitor")
 			logs, err := monitor.ReadMessageLogs(ctx, &pbdi.RegistryEntry{Name: os.Args[2]})
+			utils.SendTrace(ctx, "monitorcli-"+os.Args[1]+"-postread", time.Now(), pbt.Milestone_MARKER, "monitor")
 			if err != nil {
 				log.Fatalf("Error getting logs: %v", err)
 			}
