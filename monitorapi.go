@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"golang.org/x/net/context"
@@ -12,6 +13,9 @@ import (
 
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
+	if in.Entry == nil || in.Entry.Name == "" {
+		s.RaiseIssue(ctx, "Missing Entry", fmt.Sprintf("%v", in.Entry), false)
+	}
 	ctx = s.LogTrace(ctx, "WriteMessageLog", time.Now(), pbt.Milestone_START_FUNCTION)
 	s.writes++
 	s.writeMutex.Lock()

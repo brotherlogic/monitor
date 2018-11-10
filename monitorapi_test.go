@@ -14,6 +14,7 @@ func InitTestServer() *Server {
 	s := InitServer()
 	s.logDirectory = "testlogs"
 	os.RemoveAll(s.logDirectory)
+	s.SkipLog = true
 	return s
 }
 
