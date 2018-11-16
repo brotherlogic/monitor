@@ -44,6 +44,7 @@ func main() {
 			logs, err := monitor.ReadMessageLogs(ctx, &pbdi.RegistryEntry{Name: os.Args[2]})
 			utils.SendTrace(ctx, "monitorcli-"+os.Args[1]+"-postread", time.Now(), pbt.Milestone_MARKER, "monitor")
 			if err != nil {
+				utils.SendTrace(ctx, "monitorcli-"+os.Args[1]-"ERROR", time.Now(), pbt.Milestone_END, "monitor")
 				log.Fatalf("Error getting logs: %v", err)
 			}
 			for _, log := range logs.Logs {
