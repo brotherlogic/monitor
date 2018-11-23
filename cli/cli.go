@@ -25,7 +25,7 @@ func findServer(name string) (string, int) {
 }
 
 func main() {
-	ctx, cancel := utils.BuildContext("monitorcli-"+os.Args[1], "monitor", pbgs.ContextType_MEDIUM)
+	ctx, cancel := utils.BuildContext(fmt.Sprintf("monitorcli-%v", os.Args[1]), "monitor", pbgs.ContextType_MEDIUM)
 	defer cancel()
 
 	if len(os.Args) <= 1 {
@@ -33,7 +33,7 @@ func main() {
 	} else {
 		switch os.Args[1] {
 		case "logs":
-			utils.SendTrace(ctx, "monitorcli-"+os.Args[1]+"-prefind", time.Now(), pbt.Milestone_MARKER, "monitor")
+			utils.SendTrace(ctx, fmt.Sprintf("monitorcli-%v", os.Args[1])+"-prefind", time.Now(), pbt.Milestone_MARKER, "monitor")
 			host, port := findServer("monitor")
 			conn, _ := grpc.Dial(host+":"+strconv.Itoa(port), grpc.WithInsecure())
 			defer conn.Close()
@@ -44,7 +44,7 @@ func main() {
 			logs, err := monitor.ReadMessageLogs(ctx, &pbdi.RegistryEntry{Name: os.Args[2]})
 			utils.SendTrace(ctx, "monitorcli-"+os.Args[1]+"-postread", time.Now(), pbt.Milestone_MARKER, "monitor")
 			if err != nil {
-				utils.SendTrace(ctx, "monitorcli-"+os.Args[1]-"ERROR", time.Now(), pbt.Milestone_END, "monitor")
+				utils.SendTrace(ctx, "monitorcli-"+os.Args[1]+"ERROR", time.Now(), pbt.Milestone_END, "monitor")
 				log.Fatalf("Error getting logs: %v", err)
 			}
 			for _, log := range logs.Logs {
