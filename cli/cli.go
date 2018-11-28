@@ -48,7 +48,7 @@ func main() {
 				log.Fatalf("Error getting logs: %v", err)
 			}
 			for _, log := range logs.Logs {
-				fmt.Printf("%v. %v\n", time.Unix(log.GetTimestamps(), 0), log.Message)
+				fmt.Printf("%v (%v). %v\n", time.Unix(log.GetTimestamps(), 0), log.Entry.Identifier, log.Message)
 			}
 		}
 	}
