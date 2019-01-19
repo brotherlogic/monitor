@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"time"
 
@@ -79,10 +80,14 @@ func main() {
 	s := InitServer()
 	s.PrepServer()
 	s.GoServer.Killme = true
-	if s.RegisterServer("monitor", false) {
-		err := s.Serve()
-		if err != nil {
-			fmt.Printf("Error serving: %v", err)
-		}
+	err := s.RegisterServer("monitor", false)
+	if err != nil {
+		log.Fatalf("Error registering: %v", err)
+	}
+
+	err = s.Serve()
+	if err != nil {
+		log.Fatalf("Error serving: %v", err)
+
 	}
 }
