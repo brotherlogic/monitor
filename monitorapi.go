@@ -25,6 +25,11 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 	in.Timestamps = time.Now().Unix()
 	s.logs = append(s.logs, in)
 
+	//Trim off the logs if we're getting long
+	if len(s.logs) > 1000 {
+		s.logs = s.logs[500:]
+	}
+
 	s.LogTrace(ctx, "WriteMessageLog", time.Now(), pbt.Milestone_END_FUNCTION)
 	return &pb.LogWriteResponse{Success: true, Timestamp: in.Timestamps}, nil
 }
