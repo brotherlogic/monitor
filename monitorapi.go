@@ -23,7 +23,16 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 	s.writeMap[in.Entry.Name]++
 	s.writeMutex.Unlock()
 	in.Timestamps = time.Now().Unix()
-	s.logs = append(s.logs, in)
+
+	s.logsMutex.Lock()
+	if _, ok := s.logs[in.Entry.Name]; !ok {
+		s.logs[in.Entry.Name] = []*pb.MessageLog{}
+	}
+	s.logs[in.Entry.Name] = append(s.logs[in.Entry.Name], in)
+	if len(s.logs[in.Entry.Name]) > 200 {
+		s.logs[in.Entry.Name] = s.logs[in.Entry.Name][len(s.logs[in.Entry.Name])-200:]
+	}
+	s.logsMutex.Unlock()
 
 	s.LogTrace(ctx, "WriteMessageLog", time.Now(), pbt.Milestone_END_FUNCTION)
 	return &pb.LogWriteResponse{Success: true, Timestamp: in.Timestamps}, nil
@@ -34,10 +43,8 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 	ctx = s.LogTrace(ctx, "ReadMessageLogs", time.Now(), pbt.Milestone_START_FUNCTION)
 	s.reads++
 	response := &pb.MessageLogReadResponse{Logs: make([]*pb.MessageLog, 0)}
-	for _, log := range s.logs {
-		if log != nil && log.Entry != nil && (log.Entry.Name == in.GetName() || in.GetName() == "") {
-			response.Logs = append(response.Logs, log)
-		}
+	if val, ok := s.logs[in.Name]; ok {
+		response.Logs = append(response.Logs, val...)
 	}
 
 	if len(response.Logs) > 500 {
