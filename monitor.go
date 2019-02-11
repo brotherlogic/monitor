@@ -53,9 +53,11 @@ func (s Server) GetState() []*pbgs.State {
 	s.writeMutex.Lock()
 	defer s.writeMutex.Unlock()
 	logsLen := 0
+	s.logsMutex.Lock()
 	for _, val := range s.logs {
 		logsLen += len(val)
 	}
+	s.logsMutex.Unlock()
 	return []*pbgs.State{
 		&pbgs.State{Key: "logs", Value: int64(logsLen)},
 		&pbgs.State{Key: "reads", Value: int64(s.reads)},
