@@ -93,6 +93,7 @@ func main() {
 	s := InitServer()
 	s.PrepServer()
 	s.GoServer.Killme = true
+	s.SendTrace = false
 	err := s.RegisterServer("monitor", false)
 	if err != nil {
 		log.Fatalf("Error registering: %v", err)
