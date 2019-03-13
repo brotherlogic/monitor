@@ -18,7 +18,7 @@ import (
 type Server struct {
 	*goserver.GoServer
 	logDirectory  string
-	logs          map[string][]*pb.MessageLog
+	logs          map[string]*logHolder
 	logsMutex     *sync.Mutex
 	LastSlowCheck time.Time
 	RunTimeLock   *sync.Mutex
@@ -60,7 +60,7 @@ func (s Server) GetState() []*pbgs.State {
 	logsLen := 0
 	s.logsMutex.Lock()
 	for _, val := range s.logs {
-		logsLen += len(val)
+		logsLen += len(val.logs)
 	}
 	s.logsMutex.Unlock()
 	return []*pbgs.State{
@@ -76,7 +76,7 @@ func InitServer() *Server {
 	s := &Server{
 		&goserver.GoServer{},
 		"logs",
-		make(map[string][]*pb.MessageLog),
+		make(map[string]*logHolder),
 		&sync.Mutex{},
 		time.Now(),
 		&sync.Mutex{},
