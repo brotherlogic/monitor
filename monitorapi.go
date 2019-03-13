@@ -36,6 +36,7 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 	}
 	s.logs[in.Entry.Name].logs[s.logs[in.Entry.Name].pointer] = in
 	s.logs[in.Entry.Name].pointer++
+	s.logs[in.Entry.Name].pointer %= 200
 	s.logsMutex.Unlock()
 
 	return &pb.LogWriteResponse{Success: true, Timestamp: in.Timestamps}, nil
