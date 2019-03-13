@@ -10,6 +10,11 @@ import (
 	pb "github.com/brotherlogic/monitor/monitorproto"
 )
 
+type logHolder struct {
+	logs    []*pb.MessageLog
+	pointer int
+}
+
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
 	if in.Entry == nil || in.Entry.Name == "" {
@@ -24,12 +29,13 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 
 	s.logsMutex.Lock()
 	if _, ok := s.logs[in.Entry.Name]; !ok {
-		s.logs[in.Entry.Name] = []*pb.MessageLog{}
+		s.logs[in.Entry.Name] = &logHolder{
+			logs:    make([]*pb.MessageLog, 200),
+			pointer: 0,
+		}
 	}
-	s.logs[in.Entry.Name] = append(s.logs[in.Entry.Name], in)
-	if len(s.logs[in.Entry.Name]) > 200 {
-		s.logs[in.Entry.Name] = s.logs[in.Entry.Name][len(s.logs[in.Entry.Name])-200:]
-	}
+	s.logs[in.Entry.Name].logs[s.logs[in.Entry.Name].pointer] = in
+	s.logs[in.Entry.Name].pointer++
 	s.logsMutex.Unlock()
 
 	return &pb.LogWriteResponse{Success: true, Timestamp: in.Timestamps}, nil
@@ -40,7 +46,11 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 	s.reads++
 	response := &pb.MessageLogReadResponse{Logs: make([]*pb.MessageLog, 0)}
 	if val, ok := s.logs[in.Name]; ok {
-		response.Logs = append(response.Logs, val...)
+		for _, l := range val.logs {
+			if l != nil {
+				response.Logs = append(response.Logs, l)
+			}
+		}
 	}
 
 	if len(response.Logs) > 500 {
