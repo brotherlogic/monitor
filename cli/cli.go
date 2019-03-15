@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"time"
 
@@ -40,6 +41,11 @@ func main() {
 			if err != nil {
 				log.Fatalf("Error getting logs: %v", err)
 			}
+
+			sort.SliceStable(logs.Logs, func(i, j int) bool {
+				return logs.Logs[i].GetTimestamps() > logs.Logs[j].GetTimestamps()
+			})
+
 			for _, log := range logs.Logs {
 				fmt.Printf("%v (%v). %v\n", time.Unix(log.GetTimestamps(), 0), log.Entry.Identifier, log.Message)
 			}
