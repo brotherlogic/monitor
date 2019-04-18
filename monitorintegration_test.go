@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/context"
 
 	pbd "github.com/brotherlogic/discovery/proto"
-	pb "github.com/brotherlogic/monitor/monitorproto"
+	pb "github.com/brotherlogic/monitor/proto"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
