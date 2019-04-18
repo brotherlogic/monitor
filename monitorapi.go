@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/context"
 
 	pbr "github.com/brotherlogic/discovery/proto"
-	pb "github.com/brotherlogic/monitor/monitorproto"
+	pb "github.com/brotherlogic/monitor/proto"
 )
 
 type logHolder struct {

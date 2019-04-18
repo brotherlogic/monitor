@@ -12,7 +12,7 @@ import (
 
 	pbdi "github.com/brotherlogic/discovery/proto"
 	"github.com/brotherlogic/goserver/utils"
-	pb "github.com/brotherlogic/monitor/monitorproto"
+	pb "github.com/brotherlogic/monitor/proto"
 
 	//Needed to pull in gzip encoding init
 	_ "google.golang.org/grpc/encoding/gzip"

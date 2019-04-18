@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -11,7 +10,7 @@ import (
 
 	"github.com/brotherlogic/goserver"
 	pbgs "github.com/brotherlogic/goserver/proto"
-	pb "github.com/brotherlogic/monitor/monitorproto"
+	pb "github.com/brotherlogic/monitor/proto"
 )
 
 // Server the main server type
@@ -63,11 +62,21 @@ func (s Server) GetState() []*pbgs.State {
 		logsLen += len(val.logs)
 	}
 	s.logsMutex.Unlock()
+
+	maxWrites := 0
+	maxWriter := ""
+	for key, val := range s.writeMap {
+		if val > maxWrites {
+			maxWrites = val
+			maxWriter = key
+		}
+	}
+
 	return []*pbgs.State{
 		&pbgs.State{Key: "logs", Value: int64(logsLen)},
 		&pbgs.State{Key: "reads", Value: int64(s.reads)},
 		&pbgs.State{Key: "writes", Value: int64(s.writes)},
-		&pbgs.State{Key: "write_map", Text: fmt.Sprintf("%v", s.writeMap)},
+		&pbgs.State{Key: "max_writer", Text: maxWriter},
 	}
 }
 
