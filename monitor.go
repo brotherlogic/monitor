@@ -13,6 +13,11 @@ import (
 	pb "github.com/brotherlogic/monitor/proto"
 )
 
+const (
+	//ConfigKey is where we store the overall config
+	ConfigKey = "github.com/brotherlogic/monitor/config"
+)
+
 // Server the main server type
 type Server struct {
 	*goserver.GoServer
@@ -25,6 +30,7 @@ type Server struct {
 	writes        int
 	writeMap      map[string]int
 	writeMutex    *sync.Mutex
+	config        *pb.Config
 }
 
 const (
@@ -49,6 +55,26 @@ func (s Server) Shutdown(ctx context.Context) error {
 
 // Mote promotes/demotes this server
 func (s Server) Mote(ctx context.Context, master bool) error {
+	if master {
+		return s.load(ctx)
+	}
+	return nil
+}
+
+func (s *Server) save(ctx context.Context) {
+	s.KSclient.Save(ctx, ConfigKey, s.config)
+}
+
+func (s *Server) load(ctx context.Context) error {
+	config := &pb.Config{}
+	data, _, err := s.KSclient.Read(ctx, ConfigKey, config)
+
+	if err != nil {
+		return err
+	}
+
+	s.config = data.(*pb.Config)
+
 	return nil
 }
 
@@ -77,6 +103,7 @@ func (s Server) GetState() []*pbgs.State {
 		&pbgs.State{Key: "reads", Value: int64(s.reads)},
 		&pbgs.State{Key: "writes", Value: int64(s.writes)},
 		&pbgs.State{Key: "max_writer", Text: maxWriter},
+		&pbgs.State{Key: "stored_logs", Value: int64(len(s.config.Logs))},
 	}
 }
 
@@ -93,6 +120,7 @@ func InitServer() *Server {
 		0,
 		make(map[string]int),
 		&sync.Mutex{},
+		&pb.Config{},
 	}
 	s.Register = s
 	return s
