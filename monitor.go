@@ -5,10 +5,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/brotherlogic/goserver"
+	"github.com/brotherlogic/keystore/client"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"github.com/brotherlogic/goserver"
 	pbgs "github.com/brotherlogic/goserver/proto"
 	pb "github.com/brotherlogic/monitor/proto"
 )
@@ -128,6 +129,7 @@ func InitServer() *Server {
 
 func main() {
 	s := InitServer()
+	s.GoServer.KSclient = *keystoreclient.GetClient(s.GetIP)
 	s.PrepServer()
 	s.GoServer.Killme = true
 	s.SendTrace = false
