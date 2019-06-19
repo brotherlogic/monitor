@@ -9,6 +9,10 @@ enum LogLevel {
   KEEP_FOREVER = 1;
 }
 
+message Config {
+  repeated MessageLog logs = 1;
+}
+
 message MessageLog {
   // The entry writing the log
   discovery.RegistryEntry entry = 1;
