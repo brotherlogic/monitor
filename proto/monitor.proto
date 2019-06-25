@@ -6,7 +6,7 @@ import "github.com/brotherlogic/discovery/proto/discovery.proto";
 
 enum LogLevel {
   DISCARD = 0;
-  KEEP_FOREVER = 1;
+  KEEP_WEEK = 1;
 }
 
 message Config {
