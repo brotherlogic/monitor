@@ -39,6 +39,11 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 	s.logs[in.Entry.Name].pointer %= 200
 	s.logsMutex.Unlock()
 
+	if in.Level != pb.LogLevel_DISCARD {
+		s.config.Logs = append(s.config.Logs, in)
+		s.save(ctx)
+	}
+
 	return &pb.LogWriteResponse{Success: true, Timestamp: in.Timestamps}, nil
 }
 
