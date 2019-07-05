@@ -76,6 +76,19 @@ func (s *Server) load(ctx context.Context) error {
 
 	s.config = data.(*pb.Config)
 
+	for _, log := range s.config.Logs {
+		if _, ok := s.logs[log.Entry.Name]; !ok {
+			s.logs[log.Entry.Name] = &logHolder{
+				logs:    make([]*pb.MessageLog, 200),
+				pointer: 0,
+			}
+		}
+
+		s.logs[log.Entry.Name].logs[s.logs[log.Entry.Name].pointer] = log
+		s.logs[log.Entry.Name].pointer++
+		s.logs[log.Entry.Name].pointer %= 200
+	}
+
 	return nil
 }
 
