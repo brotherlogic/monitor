@@ -51,6 +51,7 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*pb.MessageLogReadResponse, error) {
 	s.reads++
 	response := &pb.MessageLogReadResponse{Logs: make([]*pb.MessageLog, 0)}
+	s.logsMutex.Lock()
 	if val, ok := s.logs[in.Name]; ok {
 		for _, l := range val.logs {
 			if l != nil {
@@ -58,6 +59,7 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 			}
 		}
 	}
+	s.logsMutex.Unlock()
 
 	if len(response.Logs) > 500 {
 		response.Logs = response.Logs[len(response.Logs)-500:]
