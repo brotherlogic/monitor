@@ -86,11 +86,11 @@ func (s *Server) load(ctx context.Context) error {
 					pointer: 0,
 				}
 			}
-		}
 
-		s.logs[log.Entry.Name].logs[s.logs[log.Entry.Name].pointer] = log
-		s.logs[log.Entry.Name].pointer++
-		s.logs[log.Entry.Name].pointer %= 200
+			s.logs[log.Entry.Name].logs[s.logs[log.Entry.Name].pointer] = log
+			s.logs[log.Entry.Name].pointer++
+			s.logs[log.Entry.Name].pointer %= 200
+		}
 	}
 
 	return nil
