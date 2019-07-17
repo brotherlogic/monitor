@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"sync"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 
 	pbgs "github.com/brotherlogic/goserver/proto"
+	"github.com/brotherlogic/goserver/utils"
 	pb "github.com/brotherlogic/monitor/proto"
 )
 
@@ -141,14 +143,24 @@ func InitServer() *Server {
 }
 
 func main() {
+	var init = flag.Bool("init", false, "Initialise the config")
+	flag.Parse()
 	s := InitServer()
 	s.GoServer.KSclient = *keystoreclient.GetClient(s.GetIP)
 	s.PrepServer()
 	s.GoServer.Killme = true
 	s.SendTrace = false
+
 	err := s.RegisterServer("monitor", false)
 	if err != nil {
 		log.Fatalf("Error registering: %v", err)
+	}
+
+	if *init {
+		ctx, cancel := utils.BuildContext("monitor", "monitor")
+		defer cancel()
+		s.config.Logs = append(s.config.Logs, &pb.MessageLog{Message: "Init"})
+		s.save(ctx)
 	}
 
 	err = s.Serve()
