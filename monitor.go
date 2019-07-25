@@ -148,7 +148,7 @@ func main() {
 	var init = flag.Bool("init", false, "Initialise the config")
 	flag.Parse()
 	s := InitServer()
-	s.GoServer.KSclient = *keystoreclient.GetClient(s.GetIP)
+	s.GoServer.KSclient = *keystoreclient.GetClient(s.DialMaster)
 	s.PrepServer()
 	s.GoServer.Killme = true
 	s.SendTrace = false
