@@ -150,7 +150,6 @@ func main() {
 	s := InitServer()
 	s.GoServer.KSclient = *keystoreclient.GetClient(s.DialMaster)
 	s.PrepServer()
-	s.GoServer.Killme = true
 	s.SendTrace = false
 
 	err := s.RegisterServer("monitor", false)
