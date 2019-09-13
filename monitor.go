@@ -152,6 +152,9 @@ func main() {
 	s.PrepServer()
 	s.SendTrace = false
 
+	// Monitor can't call the monitor
+	s.SkipLog = true
+
 	err := s.RegisterServer("monitor", false)
 	if err != nil {
 		log.Fatalf("Error registering: %v", err)
