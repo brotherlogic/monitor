@@ -30,13 +30,13 @@ func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.Lo
 	s.logsMutex.Lock()
 	if _, ok := s.logs[in.Entry.Name]; !ok {
 		s.logs[in.Entry.Name] = &logHolder{
-			logs:    make([]*pb.MessageLog, 200),
+			logs:    make([]*pb.MessageLog, 20),
 			pointer: 0,
 		}
 	}
 	s.logs[in.Entry.Name].logs[s.logs[in.Entry.Name].pointer] = in
 	s.logs[in.Entry.Name].pointer++
-	s.logs[in.Entry.Name].pointer %= 200
+	s.logs[in.Entry.Name].pointer %= 20
 	s.logsMutex.Unlock()
 
 	if in.Level != pb.LogLevel_DISCARD {
@@ -61,8 +61,8 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 	}
 	s.logsMutex.Unlock()
 
-	if len(response.Logs) > 500 {
-		response.Logs = response.Logs[len(response.Logs)-500:]
+	if len(response.Logs) > 20 {
+		response.Logs = response.Logs[len(response.Logs)-20:]
 	}
 
 	return response, nil
