@@ -117,11 +117,11 @@ func (s Server) GetState() []*pbgs.State {
 	}
 
 	return []*pbgs.State{
-		&pbgs.State{Key: "total_logs", Value: int64(logsLen)},
 		&pbgs.State{Key: "count_reads", Value: int64(s.reads)},
 		&pbgs.State{Key: "count_writes", Value: int64(s.writes)},
 		&pbgs.State{Key: "max_writer", Text: maxWriter},
 		&pbgs.State{Key: "stored_logs", Value: int64(len(s.config.Logs))},
+		&pbgs.State{Key: "total_logs", Value: int64(logsLen)},
 	}
 }
 
@@ -150,10 +150,10 @@ func main() {
 	s := InitServer()
 	s.GoServer.KSclient = *keystoreclient.GetClient(s.DialMaster)
 	s.PrepServer()
-	s.SendTrace = false
 
 	// Monitor can't call the monitor
 	s.SkipLog = true
+	s.SendTrace = false
 
 	err := s.RegisterServer("monitor", false)
 	if err != nil {
