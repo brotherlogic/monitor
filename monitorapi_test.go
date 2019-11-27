@@ -17,6 +17,7 @@ func InitTestServer() *Server {
 	os.RemoveAll(s.logDirectory)
 	s.GoServer.KSclient = *keystoreclient.GetTestClient("./testing")
 	s.SkipLog = true
+	s.SkipIssue = true
 	return s
 }
 
