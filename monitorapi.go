@@ -18,7 +18,7 @@ type logHolder struct {
 // WriteMessageLog Writes out a message log
 func (s *Server) WriteMessageLog(ctx context.Context, in *pb.MessageLog) (*pb.LogWriteResponse, error) {
 	if in.Entry == nil || in.Entry.Name == "" {
-		s.RaiseIssue(ctx, "Missing Entry", fmt.Sprintf("%v", in.Entry), false)
+		s.RaiseIssue(ctx, "Missing Entry", fmt.Sprintf("%v from %v", in.Entry, in), false)
 		return &pb.LogWriteResponse{}, fmt.Errorf("Entry is not specified correctly")
 	}
 	s.writes++
