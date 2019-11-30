@@ -155,7 +155,7 @@ func main() {
 	s.SkipLog = true
 	s.SendTrace = false
 
-	err := s.RegisterServerV2("monitor", false)
+	err := s.RegisterServerV2("monitor", false, false)
 	if err != nil {
 		log.Fatalf("Error registering: %v", err)
 	}
