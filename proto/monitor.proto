@@ -38,6 +38,7 @@ message LogWriteResponse {
 message MessageLogReadResponse {
   // The response from the logs
   repeated MessageLog logs = 1;
+  string server = 2;
 }
 
 

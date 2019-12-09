@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"sort"
-	"strconv"
 	"time"
 
 	"google.golang.org/grpc"
@@ -15,32 +14,45 @@ import (
 	pb "github.com/brotherlogic/monitor/proto"
 
 	//Needed to pull in gzip encoding init
+	"google.golang.org/grpc/balancer/roundrobin"
 	_ "google.golang.org/grpc/encoding/gzip"
+	"google.golang.org/grpc/resolver"
 )
 
-func findServer(name string) (string, int) {
-	ip, port, _ := utils.Resolve(name, "monitor-cli")
-	return ip, int(port)
+func init() {
+	resolver.Register(&utils.DiscoveryClientResolverBuilder{})
 }
 
 func main() {
-	ctx, cancel := utils.BuildContext(fmt.Sprintf("monitorcli-%v", os.Args[1]), "monitor")
-	defer cancel()
 
 	if len(os.Args) <= 1 {
 		fmt.Printf("Commands: build run\n")
 	} else {
 		switch os.Args[1] {
 		case "logs":
-			host, port := findServer("monitor")
-			conn, _ := grpc.Dial(host+":"+strconv.Itoa(port), grpc.WithInsecure())
+			conn, err := grpc.Dial("discovery:///monitor", grpc.WithInsecure(),
+				grpc.WithBalancerName(roundrobin.Name))
+			if err != nil {
+				log.Fatalf("Dial error: %v", err)
+			}
 			defer conn.Close()
 
-			monitor := pb.NewMonitorServiceClient(conn)
-			logs, err := monitor.ReadMessageLogs(ctx, &pbdi.RegistryEntry{Name: os.Args[2]})
-			if err != nil {
-				log.Fatalf("Error getting logs: %v", err)
+			var logs *pb.MessageLogReadResponse
+			err = fmt.Errorf("An error")
+			count := 0
+			for err != nil && count < 4 {
+				ctx, cancel := utils.ManualContext(fmt.Sprintf("monitorcli-%v", os.Args[1]), "monitor", time.Minute)
+				defer cancel()
+
+				monitor := pb.NewMonitorServiceClient(conn)
+				logs, err = monitor.ReadMessageLogs(ctx, &pbdi.RegistryEntry{Name: os.Args[2]})
+				if err != nil {
+					log.Printf("%v, Error getting logs: %v", count, err)
+				}
+				log.Printf("Count: %v -> %v", count, err)
+				count++
 			}
+			log.Printf("Source -> %v", logs.Server)
 
 			sort.SliceStable(logs.Logs, func(i, j int) bool {
 				return logs.Logs[i].GetTimestamps() > logs.Logs[j].GetTimestamps()

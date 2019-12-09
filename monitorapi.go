@@ -65,5 +65,6 @@ func (s *Server) ReadMessageLogs(ctx context.Context, in *pbr.RegistryEntry) (*p
 		response.Logs = response.Logs[len(response.Logs)-20:]
 	}
 
+	response.Server = s.Registry.Identifier
 	return response, nil
 }
