@@ -14,7 +14,7 @@ import (
 	pb "github.com/brotherlogic/monitor/proto"
 
 	//Needed to pull in gzip encoding init
-	"google.golang.org/grpc/balancer/roundrobin"
+
 	_ "google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/resolver"
 )
@@ -30,8 +30,7 @@ func main() {
 	} else {
 		switch os.Args[1] {
 		case "logs":
-			conn, err := grpc.Dial("discovery:///monitor", grpc.WithInsecure(),
-				grpc.WithBalancerName(roundrobin.Name))
+			conn, err := grpc.Dial("discovery:///monitor", grpc.WithInsecure(), grpc.WithBalancerName("my_pick_first"))
 			if err != nil {
 				log.Fatalf("Dial error: %v", err)
 			}
@@ -52,7 +51,7 @@ func main() {
 				fmt.Printf("Count: %v -> %v\n", count, err)
 				count++
 			}
-			fmt.Printf("Source -> %v\n", logs.Server)
+			fmt.Printf("Source -> %v [%v]\n", logs.Server, len(logs.Logs))
 
 			sort.SliceStable(logs.Logs, func(i, j int) bool {
 				return logs.Logs[i].GetTimestamps() > logs.Logs[j].GetTimestamps()
