@@ -45,20 +45,22 @@ func main() {
 
 				monitor := pb.NewMonitorServiceClient(conn)
 				logs, err = monitor.ReadMessageLogs(ctx, &pbdi.RegistryEntry{Name: os.Args[2]})
-				if err != nil {
-					fmt.Printf("%v, Error getting logs: %v\n", count, err)
-				}
-				fmt.Printf("Count: %v -> %v\n", count, err)
 				count++
 			}
-			fmt.Printf("Source -> %v [%v]\n", logs.Server, len(logs.Logs))
+			if err != nil {
+				fmt.Printf("%v, Error getting logs: %v\n", count, err)
+			}
 
-			sort.SliceStable(logs.Logs, func(i, j int) bool {
-				return logs.Logs[i].GetTimestamps() > logs.Logs[j].GetTimestamps()
-			})
+			if logs != nil {
+				fmt.Printf("Source -> %v [%v]\n", logs.Server, len(logs.Logs))
 
-			for _, log := range logs.Logs {
-				fmt.Printf("%v (%v). %v\n", time.Unix(log.GetTimestamps(), 0), log.Entry.Identifier, log.Message)
+				sort.SliceStable(logs.Logs, func(i, j int) bool {
+					return logs.Logs[i].GetTimestamps() > logs.Logs[j].GetTimestamps()
+				})
+
+				for _, log := range logs.Logs {
+					fmt.Printf("%v (%v). %v\n", time.Unix(log.GetTimestamps(), 0), log.Entry.Identifier, log.Message)
+				}
 			}
 		}
 	}
