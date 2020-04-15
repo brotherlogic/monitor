@@ -30,7 +30,7 @@ func main() {
 	} else {
 		switch os.Args[1] {
 		case "logs":
-			conn, err := grpc.Dial("discovery:///monitor", grpc.WithInsecure(), grpc.WithBalancerName("my_pick_first"))
+			conn, err := grpc.Dial("discovery:///monitor", grpc.WithInsecure(), grpc.WithBalancerName("my_pick_first"), grpc.WithMaxMsgSize(1024*1024*1024))
 			if err != nil {
 				log.Fatalf("Dial error: %v", err)
 			}
@@ -46,6 +46,10 @@ func main() {
 				monitor := pb.NewMonitorServiceClient(conn)
 				logs, err = monitor.ReadMessageLogs(ctx, &pbdi.RegistryEntry{Name: os.Args[2]})
 				count++
+
+				if err != nil {
+					fmt.Printf("Err %v\n", err)
+				}
 			}
 			if err != nil {
 				fmt.Printf("%v, Error getting logs: %v\n", count, err)
