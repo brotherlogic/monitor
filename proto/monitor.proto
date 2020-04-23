@@ -4,7 +4,7 @@ package monitor;
 
 import "github.com/brotherlogic/discovery/proto/discovery.proto";
 
-option go_package = ".;monitor";g
+option go_package = ".;monitor";
 
 enum LogLevel {
   DISCARD = 0;
