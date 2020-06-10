@@ -155,7 +155,7 @@ func main() {
 	s.SkipLog = true
 	s.SendTrace = false
 
-	err := s.RegisterServerV2("monitor", false, false)
+	err := s.RegisterServerV2("monitor", false, true)
 	if err != nil {
 		return
 	}
