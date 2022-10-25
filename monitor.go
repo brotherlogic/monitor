@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/brotherlogic/goserver"
-	"github.com/brotherlogic/keystore/client"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
@@ -148,14 +147,13 @@ func main() {
 	var init = flag.Bool("init", false, "Initialise the config")
 	flag.Parse()
 	s := InitServer()
-	s.GoServer.KSclient = *keystoreclient.GetClient(s.DialMaster)
-	s.PrepServer()
+	s.PrepServer("monitor")
 
 	// Monitor can't call the monitor
 	s.SkipLog = true
 	s.SendTrace = false
 
-	err := s.RegisterServerV2("monitor", false, true)
+	err := s.RegisterServerV2(false)
 	if err != nil {
 		return
 	}
